@@ -37,7 +37,8 @@ class Storage
       self.data = {
         api_url: 'http://localhost:3000',
         api_key: input,
-        organizations: {}
+        organizations: {},
+        projects: {}
       }
     end
 
@@ -48,7 +49,8 @@ class Storage
     self.data = {
         api_url: 'http://localhost:3000',
         api_key: nil,
-        organizations: {}
+        organizations: {},
+        projects: {}
       }
 
     save

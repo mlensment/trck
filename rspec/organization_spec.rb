@@ -29,6 +29,8 @@ describe Organization do
     o.errors.include?('Cannot create two organizations with same name')
   end
 
+  it 'adds project'
+
   it 'returns projects'
 
   context 'when multiple organizations' do
