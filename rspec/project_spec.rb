@@ -43,4 +43,18 @@ describe Project do
     p.name.should eq('ccs')
     p.organization.name.should eq('deskrock')
   end
+
+  it 'deletes project' do
+    p = Project.new({
+      name: 'cofi'
+    })
+
+    p.save
+
+    Project.all.length.should eq(1)
+
+    p.delete
+
+    Project.all.length.should eq(0)
+  end
 end

@@ -29,9 +29,99 @@ describe Organization do
     o.errors.include?('Cannot create two organizations with same name')
   end
 
-  it 'adds project'
+  it 'adds project' do
+    o = Organization.new('deskrock')
+    o.add_project('ccs').should eq(false)
+    o.errors.include?('Cannot add peojct - organization is not saved')
 
-  it 'returns projects'
+    o.save
+    o.add_project('ccs').kind_of?(Project).should be_true
+    o.add_project('cofi')
+
+    o.projects.length.should eq(2)
+
+    o.projects.first.name.should eq('ccs')
+    o.projects.last.name.should eq('cofi')
+
+    o2 = Organization.new('friendlyfinance')
+    o2.save
+    o2.add_project('foo')
+
+    o2.projects.length.should eq(1)
+
+    o2.add_project('bar')
+    o2.projects.length.should eq(2)
+  end
+
+  it 'finds project by name' do
+    o = Organization.new('deskrock')
+    o.save
+
+    o.add_project('ccs')
+    p = o.find_project 'ccs'
+    p.name.should eq('ccs')
+  end
+
+
+  it 'deletes project' do
+    #with delete method
+    o = Organization.new('deskrock')
+    o.save
+
+    p = o.add_project('ccs')
+    o.projects.length.should eq(1)
+
+    p.delete
+    o.projects.length.should eq(0)
+
+    #with remove method
+    o.add_project('ccs')
+    o.add_project('cofi')
+    o.projects.length.should eq(2)
+
+    o2 = Organization.new('friendlyfinance')
+    o2.save
+    o2.add_project('foo')
+    o2.add_project('bar')
+    o2.projects.length.should eq(2)
+
+    o.remove_project('ccs')
+    o.projects.length.should eq(1)
+    o2.projects.length.should eq(2)
+
+    o.remove_project('cofi')
+    o.projects.length.should eq(0)
+    o2.projects.length.should eq(2)
+
+    o2.remove_project('foo')
+    o2.remove_project('bar')
+    o2.projects.length.should eq(0)
+  end
+
+  it 'deletes organization and projects' do
+    o = Organization.new('deskrock')
+    o.save
+    o.add_project('ccs')
+    o.add_project('cofi')
+
+    o2 = Organization.new('friendlyfinance')
+    o2.save
+    o2.add_project('foo')
+    o2.add_project('bar')
+
+    Organization.all.length.should eq(2)
+    Project.all.length.should eq(4)
+
+    o.destroy
+
+    Organization.all.length.should eq(1)
+    Project.all.length.should eq(2)
+
+    o2.destroy
+
+    Organization.all.length.should eq(0)
+    Project.all.length.should eq(0)
+  end
 
   context 'when multiple organizations' do
     before(:each) do

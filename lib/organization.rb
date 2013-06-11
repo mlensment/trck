@@ -1,5 +1,5 @@
 require 'model'
-require 'organization'
+require 'project'
 
 class Organization < Model
   attr_accessor :active
@@ -7,6 +7,36 @@ class Organization < Model
   def initialize args = {}
     self.active = false
     super
+  end
+
+  def add_project name
+    unless persisted
+      errors << 'Cannot add peojct - organization is not saved'
+      return false
+    end
+
+    p = Project.new({
+      name: name,
+      organization: self
+    })
+
+    (p.save) ? p : false
+  end
+
+  def remove_project name
+    find_project(name).delete
+  end
+
+  def projects
+    Project.all.select{|x| x.organization_name == self.name}
+  end
+
+  def find_project name
+    projects.select{|x| x.name == name}.first
+  end
+
+  def destroy
+    projects.each(&:delete);delete
   end
 
   def mark_active

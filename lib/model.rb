@@ -55,6 +55,12 @@ class Model
     end
   end
 
+  def delete
+    s = Storage.load
+    s.data[(self.class.name.downcase + 's').to_sym].delete(name)
+    s.save
+  end
+
   class << self
     def find_by_name name
       s = Storage.load
