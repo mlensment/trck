@@ -32,7 +32,7 @@ describe Organization do
   it 'adds project' do
     o = Organization.new('deskrock')
     o.add_project('ccs').should eq(false)
-    o.errors.include?('Cannot add peojct - organization is not saved')
+    o.errors.include?('Cannot add project - organization is not saved')
 
     o.save
     o.add_project('ccs').kind_of?(Project).should be_true
@@ -62,71 +62,12 @@ describe Organization do
     p.name.should eq('ccs')
   end
 
-
-  it 'deletes project' do
-    #with delete method
-    o = Organization.new('deskrock')
-    o.save
-
-    p = o.add_project('ccs')
-    o.projects.length.should eq(1)
-
-    p.delete
-    o.projects.length.should eq(0)
-
-    #with remove method
-    o.add_project('ccs')
-    o.add_project('cofi')
-    o.projects.length.should eq(2)
-
-    o2 = Organization.new('friendlyfinance')
-    o2.save
-    o2.add_project('foo')
-    o2.add_project('bar')
-    o2.projects.length.should eq(2)
-
-    o.remove_project('ccs')
-    o.projects.length.should eq(1)
-    o2.projects.length.should eq(2)
-
-    o.remove_project('cofi')
-    o.projects.length.should eq(0)
-    o2.projects.length.should eq(2)
-
-    o2.remove_project('foo')
-    o2.remove_project('bar')
-    o2.projects.length.should eq(0)
-  end
-
-  it 'deletes organization and projects' do
-    o = Organization.new('deskrock')
-    o.save
-    o.add_project('ccs')
-    o.add_project('cofi')
-
-    o2 = Organization.new('friendlyfinance')
-    o2.save
-    o2.add_project('foo')
-    o2.add_project('bar')
-
-    Organization.all.length.should eq(2)
-    Project.all.length.should eq(4)
-
-    o.destroy
-
-    Organization.all.length.should eq(1)
-    Project.all.length.should eq(2)
-
-    o2.destroy
-
-    Organization.all.length.should eq(0)
-    Project.all.length.should eq(0)
-  end
-
   context 'when multiple organizations' do
     before(:each) do
-      Organization.new('deskrock').save
-      Organization.new('friendlyfinance').save
+      @o1 = Organization.new('deskrock')
+      @o1.save
+      @o2 = Organization.new('friendlyfinance')
+      @o2.save
     end
 
     it 'returns all organizations' do
@@ -160,6 +101,56 @@ describe Organization do
       ac = Organization.find_active
       ac.active.should be_true
       ac.name.should eq('friendlyfinance')
+    end
+
+    it 'deletes project' do
+      #with delete method
+      p = @o1.add_project('ccs')
+      @o1.projects.length.should eq(1)
+
+      p.delete
+      @o1.projects.length.should eq(0)
+
+      #with remove method
+      @o1.add_project('ccs')
+      @o1.add_project('cofi')
+      @o1.projects.length.should eq(2)
+
+      @o2.add_project('foo')
+      @o2.add_project('bar')
+      @o2.projects.length.should eq(2)
+
+      @o1.remove_project('ccs')
+      @o1.projects.length.should eq(1)
+      @o2.projects.length.should eq(2)
+
+      @o1.remove_project('cofi')
+      @o1.projects.length.should eq(0)
+      @o2.projects.length.should eq(2)
+
+      @o2.remove_project('foo')
+      @o2.remove_project('bar')
+      @o2.projects.length.should eq(0)
+    end
+
+    it 'deletes organization and projects' do
+      @o1.add_project('ccs')
+      @o1.add_project('cofi')
+      @o2.add_project('foo')
+      @o2.add_project('bar')
+
+      Organization.all.length.should eq(2)
+      Project.all.length.should eq(4)
+
+      @o1.destroy
+
+      Organization.all.length.should eq(1)
+      Project.all.length.should eq(2)
+
+      @o2.destroy
+
+      Organization.all.length.should eq(0)
+      Project.all.length.should eq(0)
     end
   end
 end

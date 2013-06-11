@@ -11,7 +11,7 @@ class Organization < Model
 
   def add_project name
     unless persisted
-      errors << 'Cannot add peojct - organization is not saved'
+      errors << 'Cannot add project - organization is not saved'
       return false
     end
 
