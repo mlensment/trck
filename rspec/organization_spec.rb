@@ -152,5 +152,10 @@ describe Organization do
       Organization.all.length.should eq(0)
       Project.all.length.should eq(0)
     end
+
+    it 'does not add two projects with same name' do
+      @o1.add_project('ccs')
+      @o1.add_project('ccs').should be_false
+    end
   end
 end

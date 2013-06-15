@@ -12,4 +12,8 @@ class Project < Model
     Organization.find_by_name(organization_name)
   end
 
+  def add_task
+    Task.new()
+  end
+
 end
