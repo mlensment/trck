@@ -4,6 +4,19 @@ trck status (shows the latest 3 tracks)
 o = Organization.find_active
 
 
+
+trck task add 110
+trck task remove 110
+
+trck start 110
+trck stop
+
+trck project add bla
+
+
+trck org add deskrock
+trck projec
+
 trck status ccs
 trck status --all
 

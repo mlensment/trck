@@ -57,4 +57,16 @@ describe Project do
 
     Project.all.length.should eq(0)
   end
+
+  it 'adds tasks' do
+    p = Project.new({
+      name: 'cofi'
+    })
+    p.save
+
+    p.add_task('100').kind_of?(Task).should be_true
+    p.tasks.length.should eq(1)
+
+
+  end
 end

@@ -38,7 +38,8 @@ class Storage
         api_url: 'http://localhost:3000',
         api_key: input,
         organizations: {},
-        projects: {}
+        projects: {},
+        tasks: {}
       }
     end
 
@@ -50,7 +51,8 @@ class Storage
         api_url: 'http://localhost:3000',
         api_key: nil,
         organizations: {},
-        projects: {}
+        projects: {},
+        tasks: {}
       }
 
     save
