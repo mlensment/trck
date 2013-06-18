@@ -31,6 +31,25 @@ describe Task do
       t2.save.should be_false
       t2.errors.include?('Cannot create two tasks with same name').should be_true
     end
+
+    it 'tracks time' do
+      t1 = Task.new({
+        name: '200'
+      })
+      t1.save
+
+      t1.running.should be_false
+
+      t1.start
+      t1.start_at.kind_of?(Time).should be_true
+
+      t1.running.should be_true
+
+      t1.stop
+      t1.end_at.kind_of?(Time).should be_true
+
+      t1.duration.kind_of?(Fixnum).should be_true
+    end
   end
 
   context 'with project' do

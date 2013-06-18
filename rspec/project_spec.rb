@@ -58,14 +58,20 @@ describe Project do
     Project.all.length.should eq(0)
   end
 
-  it 'adds tasks' do
+  it 'adds and returns tasks' do
     p = Project.new({
       name: 'cofi'
     })
+
+    p.add_task('100').should be_false
+    p.errors.include?('Cannot add project - organization is not saved')
     p.save
 
     p.add_task('100').kind_of?(Task).should be_true
     p.tasks.length.should eq(1)
+    p.add_task('100').kind_of?(Task).should be_false
+    p.add_task('200').kind_of?(Task).should be_true
+    p.tasks.length.should eq(2)
 
 
   end

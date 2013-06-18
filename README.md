@@ -15,7 +15,7 @@ trck project add bla
 
 
 trck org add deskrock
-trck projec
+trck project
 
 trck status ccs
 trck status --all
