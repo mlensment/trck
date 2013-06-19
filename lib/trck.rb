@@ -40,23 +40,26 @@ class Trck
       (o.save) ? "Organization #{args[1]} added" : o.errors.first
     end
 
-    def delete_organization name
-
+    def delete_organization args
+      o = Organization.find_by_name(args[1])
+      return "Organization #{args[1]} was not found" unless o
+      res = prompt("Are you sure you want to delete organization #{args[1]}? (yes/no): ")
+      return "Organization #{args[1]} was removed" if o.destroy
     end
 
     def destroy_organization args
       o = Organization.find_by_name(args[1])
       return "Organization #{args[1]} was not found" unless o
 
-      res = prompt("Are you sure you want to delete organization #{args[1]} with projects and tasks? (yes/no): ").delete("\n")
+      res = prompt("Are you sure you want to delete organization #{args[1]} with projects and tasks? (yes/no): ")
       if res == 'yes'
-        return "Organization #{args[1]} with projects and tasks removed" if o.destroy
+        return "Organization #{args[1]} with projects and tasks was removed" if o.destroy
       end
     end
 
     def prompt p
       print p
-      $stdin.gets
+      $stdin.gets.delete("\n")
     end
 
     def self.sync

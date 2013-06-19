@@ -35,11 +35,16 @@ describe Trck do
     Trck.org('add', 'skype').should eq('Cannot create two organizations with same name')
   end
 
-  it 'removes organization' do
-    Trck.org('remove', '-R', 'deskrock').should eq('Organization deskrock with projects and tasks removed')
+  it 'destroys organization' do
+    Trck.org('remove', '-R', 'deskrock').should eq('Organization deskrock with projects and tasks was removed')
     Organization.all.length.should eq(1)
 
     Trck.org('remove', '-R', 'deskrock').should eq('Organization deskrock was not found')
+  end
+
+  it 'deletes organization' do
+    Trck.org('remove', 'deskrock').should eq('Organization deskrock was removed')
+    Organization.all.length.should eq(1)
   end
 
   it 'adds project'
