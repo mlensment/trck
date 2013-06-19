@@ -49,7 +49,7 @@ class Model
     if valid?
       self.persisted = true
       s.data[(self.class.name.downcase + 's').to_sym][name] = to_hash
-      s.save
+      (s.save) ? self : false
     else
       false
     end

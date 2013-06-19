@@ -2,9 +2,13 @@
 
 require 'trck'
 
-case ARGV[0]
+command = ARGV.shift
+
+case command
+when 'reset'
+  Storage.load.reset
 when 'setup'
-  Trck.setup(ARGV[1])
+  Trck.setup(ARGV)
 
 when 'status'
 
@@ -15,9 +19,7 @@ when 'stop'
 when 'project'
 
 when 'org'
-
+  puts Trck.org(ARGV)
 when 'sync'
 
-else
-  Trck.command(ARGV[0])
 end

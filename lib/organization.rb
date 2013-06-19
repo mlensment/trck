@@ -55,5 +55,10 @@ class Organization < Model
     def find_active
       Organization.all.select(&:active).first
     end
+
+    def add_organization name
+      o = Organization.new(name)
+      (o.save) ? o : false
+    end
   end
 end

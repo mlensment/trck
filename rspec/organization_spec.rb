@@ -10,7 +10,7 @@ describe Organization do
     Organization.find_by_name('deskrock').should eq(nil)
 
     o = Organization.new('deskrock')
-    o.save.should eq(true)
+    o.save.kind_of?(Organization).should eq(true)
 
     o = Organization.find_by_name 'deskrock'
     o.name.should eq('deskrock')
