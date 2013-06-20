@@ -4,11 +4,15 @@ describe Trck do
   before(:each) do
     s = Storage.load
     s.reset
-    @o1 = Organization.add_organization('deskrock')
+    @o1 = Organization.new('deskrock')
 
     @o1.save
     @o2 = Organization.new('friendlyfinance')
     @o2.save
+
+    Trck.task('add', '100')
+    Trck.task('add', '200')
+    Trck.task('add', '300')
   end
 
   it 'returns all organizations' do
@@ -45,6 +49,21 @@ describe Trck do
   it 'deletes organization' do
     Trck.org('remove', 'deskrock').should eq('Organization deskrock was removed')
     Organization.all.length.should eq(1)
+  end
+
+  it 'adds task' do
+    Trck.task('add', '400').should eq('Task 400 was added')
+    Trck.task('add', '400').should eq('Cannot create two tasks with same name')
+  end
+
+  it 'lists tasks' do
+    Trck.task.should eq("100\n200\n300")
+  end
+
+  it 'removes tasks' do
+    Trck.task('remove', '400').should eq('Task 400 was not found')
+    Trck.task('remove', '100').should eq('Task 100 was removed')
+    Task.all.length.should eq(2)
   end
 
   it 'adds project'
