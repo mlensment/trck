@@ -34,7 +34,7 @@ describe Trck do
   end
 
   it 'adds organization' do
-    Trck.org('add', 'skype').should eq('Organization skype added')
+    Trck.org('add', 'skype').should eq('Organization skype was added')
     Organization.all.length.should eq(3)
     Trck.org('add', 'skype').should eq('Cannot create two organizations with same name')
   end
@@ -66,5 +66,8 @@ describe Trck do
     Task.all.length.should eq(2)
   end
 
-  it 'adds project'
+  it 'adds project' do
+    Trck.project('add', 'ccs').should ('Project ccs was added')
+    Trck.project('add', 'ccs').should ('Cannot create two projects with same name')
+  end
 end

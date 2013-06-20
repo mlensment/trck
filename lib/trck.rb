@@ -37,7 +37,7 @@ class Trck
 
     def add_organization args
       o = Organization.new(args[1])
-      (o.save) ? "Organization #{args[1]} added" : o.errors.first
+      (o.save) ? "Organization #{args[1]} was added" : o.errors.first
     end
 
     def delete_organization args
