@@ -15,7 +15,7 @@ class Project < Model
 
   def add_task name
     unless persisted
-      errors << 'Cannot add task - project is not saved'
+      messages << 'Cannot add task - project is not saved'
       return false
     end
 

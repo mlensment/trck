@@ -10,7 +10,7 @@ describe Task do
     it 'creates and returns task' do
       t = Task.new({})
       t.save.should be_false
-      t.errors.include?('Cannot create task without name').should be_true
+      t.messages.include?('Cannot create task without name').should be_true
 
       Task.new({
         name: '100'
@@ -29,7 +29,7 @@ describe Task do
         name: '200'
       })
       t2.save.should be_false
-      t2.errors.include?('Cannot create two tasks with same name').should be_true
+      t2.messages.include?('Cannot create two tasks with same name').should be_true
     end
 
     it 'tracks time' do

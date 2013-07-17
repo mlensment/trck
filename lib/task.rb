@@ -5,6 +5,11 @@ require 'project'
 class Task < Model
   attr_accessor :organization_name, :project_name, :start_at, :end_at, :running, :duration
 
+  MESSAGES = {
+    task_started: 'Task %0 was started',
+    task_already_started: 'Task %0 already started'
+  }
+
   def organization=(organization)
     self.organization_name = organization.name
   end
@@ -22,9 +27,11 @@ class Task < Model
   end
 
   def start
+    return message(:task_already_started, name) if running
+
     self.start_at = Time.now
     self.running = true
-    save
+    save ? message(:task_started, name) :  messages.first
   end
 
   def stop

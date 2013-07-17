@@ -1,5 +1,13 @@
 Timetracker gem
 
+trck setup 3498054ufdjksjkvdösdfsa238934
+trck project add tumblr
+trck task add tumblr 110
+
+
+
+
+
 trck status (shows the latest 3 tracks)
 o = Organization.find_active
 

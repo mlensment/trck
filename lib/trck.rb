@@ -9,6 +9,38 @@ class Trck
       @storage.setup(input)
     end
 
+    def start *args
+      args.flatten!
+      if args.length > 1
+
+      else
+        t = Task.find_by_name args[0]
+        return t ? t.start : "Task #{args[0]} was not found"
+      end
+    end
+
+    def add *args
+      args.flatten!
+
+      return add_organization(args) if args[0] == 'organization' || args[0] == 'org'
+
+      return add_project(args) if args[0] == 'project'
+
+      return add_task(args) if args[0] == 'task'
+    end
+
+    def remove *args
+      args.flatten!
+
+      return destroy_organization(args) if (args[0] == 'organization' || args[0] == 'org') && get_arg(args, '-R')
+
+      return delete_organization(args) if args[0] == 'organization' || args[0] == 'org'
+
+      return delete_project(args) if args[0] == 'project'
+
+      return delete_task(args) if args[0] == 'task'
+    end
+
     def org *args
       args.flatten!
       return show_organizations if args.none?
@@ -37,7 +69,7 @@ class Trck
 
     def add_organization args
       o = Organization.new(args[1])
-      (o.save) ? "Organization #{args[1]} was added" : o.errors.first
+      (o.save) ? "Organization #{args[1]} was added" : o.messages.first
     end
 
     def delete_organization args
@@ -57,6 +89,22 @@ class Trck
       end
     end
 
+    def project *args
+      args.flatten!
+      return add_project(args) if args[0] == 'add'
+    end
+
+    def add_project args
+      o = Organization.find_active
+      if o
+        o.add_project(args[1]) ? "Project #{args[1]} was added to organization #{o.name}" : "An error occurred"
+      else
+        p = Project.new(args[1])
+        p = p.save
+      end
+      p ? "Project #{args[1]} was added" : p.messages.first
+    end
+
     def task *args
       args.flatten!
       return show_tasks if args.none?
@@ -72,7 +120,7 @@ class Trck
 
     def add_task args
       t = Task.new(args[1])
-      (t.save) ? "Task #{args[1]} was added" : t.errors.first
+      (t.save) ? "Task #{args[1]} was added" : t.messages.first
     end
 
     def delete_task args

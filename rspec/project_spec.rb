@@ -27,7 +27,7 @@ describe Project do
     })
 
     p.save.should be_false
-    p.errors.include?('Can not create two projects with same name')
+    p.messages.include?('Can not create two projects with same name')
   end
 
   it 'returns project' do
@@ -64,7 +64,7 @@ describe Project do
     })
 
     p.add_task('100').should be_false
-    p.errors.include?('Cannot add project - organization is not saved')
+    p.messages.include?('Cannot add project - organization is not saved')
     p.save
 
     p.add_task('100').kind_of?(Task).should be_true

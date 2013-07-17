@@ -2,10 +2,21 @@ require 'storage'
 require 'pry'
 
 class Model
-  attr_accessor :name, :errors, :persisted
+  attr_accessor :name, :persisted, :messages
+  # ACTIONS = ["ADD","REMOVE"]
+
+  # def execute action, options
+  #   result = self.send(action, options) if ACTIONS.includes?(action)
+  #   echo "#{self.class.to_s} #{action} #{result ? ok : not_ok}"
+  # end
+
+  MESSAGES = {
+    create_same_name_obj: "Cannot create two {class_name}s with same name",
+    create_without_name_obj: "Cannot create {class_name} without name"
+  }
 
   def initialize args = {}
-    self.errors = []
+    self.messages = []
     self.persisted = false
 
     if args.kind_of?(String)
@@ -33,14 +44,14 @@ class Model
 
   def valid?
     s = Storage.load
-    self.errors = []
+    self.messages = []
     if s.data[(self.class.name.downcase + 's').to_sym][name] && !persisted
-      self.errors << "Cannot create two #{(self.class.name.downcase) + 's'} with same name"
+      messages << message(:create_same_name_obj)
     end
 
-    self.errors << "Cannot create #{self.class.name.downcase} without name" unless name
+    messages << message(:create_without_name_obj) unless name
 
-    return false if errors.any?
+    return false if messages.any?
     true
   end
 
@@ -59,6 +70,17 @@ class Model
     s = Storage.load
     s.data[(self.class.name.downcase + 's').to_sym].delete(name)
     s.save
+  end
+
+  def message key, *args
+    msgs = MESSAGES.merge(self.class::MESSAGES)
+    m = msgs[key].gsub('{class_name}', self.class.name.downcase)
+
+    args.each_with_index do |x, i|
+      m.gsub!('%' + i.to_s, x)
+    end
+
+    m
   end
 
   class << self

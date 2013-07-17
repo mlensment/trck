@@ -2,24 +2,8 @@
 
 require 'trck'
 
-command = ARGV.shift
+action = ARGV.shift
+model = ARGV.shift
+options = ARGV
 
-case command
-when 'reset'
-  Storage.load.reset
-when 'setup'
-  Trck.setup(ARGV)
-
-when 'status'
-
-when 'start'
-
-when 'stop'
-
-when 'project'
-
-when 'org'
-  puts Trck.org(ARGV)
-when 'sync'
-
-end
+model.send(action, options)

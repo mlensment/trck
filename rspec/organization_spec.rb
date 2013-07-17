@@ -22,17 +22,17 @@ describe Organization do
 
     o.name = nil
     o.save.should be_false
-    o.errors.include?('Cannot create organization without name')
+    o.messages.include?('Cannot create organization without name')
 
     o = Organization.new('deskrock')
     o.save.should be_false
-    o.errors.include?('Cannot create two organizations with same name')
+    o.messages.include?('Cannot create two organizations with same name')
   end
 
   it 'adds project' do
     o = Organization.new('deskrock')
-    o.add_project('ccs').should eq(false)
-    o.errors.include?('Cannot add project - organization is not saved')
+    o.add_project('ccs').should be_false
+    o.messages.include?('Cannot add project - organization is not saved').should be_true
 
     o.save
     o.add_project('ccs').kind_of?(Project).should be_true

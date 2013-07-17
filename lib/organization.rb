@@ -4,6 +4,11 @@ require 'project'
 class Organization < Model
   attr_accessor :active
 
+  MESSAGES = {
+    org_not_saved: 'Cannot add project - organization is not saved',
+    org_added: 'Organization {org_name} was added'
+  }
+
   def initialize args = {}
     self.active = false
     super
@@ -11,7 +16,7 @@ class Organization < Model
 
   def add_project name
     unless persisted
-      errors << 'Cannot add project - organization is not saved'
+      message(:org_not_saved)
       return false
     end
 
@@ -20,7 +25,7 @@ class Organization < Model
       organization: self
     })
 
-    (p.save) ? p : false
+    p.save ? p : false
   end
 
   def remove_project name
@@ -52,6 +57,11 @@ class Organization < Model
   end
 
   class << self
+    def add name
+      o = new(name)
+      (o.save) ? message(:org_added, name) : o.messages.first
+    end
+
     def find_active
       Organization.all.select(&:active).first
     end
