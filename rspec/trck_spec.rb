@@ -1,5 +1,9 @@
 require 'trck'
 
+def trck args
+  Trck.execute(args)
+end
+
 describe Trck do
   before(:each) do
     s = Storage.load
@@ -79,93 +83,106 @@ describe Trck do
   #   Trck.add('project', 'ccs').should eq('Cannot create two projects with same name')
   # end
 
-
   it 'does everything' do
-    #trck setup 389949494
+    trck('add task 100').should eq('Task 100 was added')
+    trck('add task 100').should eq('Cannot create two tasks with same name')
 
-    #trct add task 100
-    Trck.add('task', '100').should eq('Task 100 was added')
-    Trck.add('task', '100').should eq('Cannot create two tasks with same name')
+    trck('start 100').should eq('Task 100 was started')
+    trck('start 100').should eq('Task 100 already started')
 
-    #trck start 100
-    Trck.start('100').should eq('Task 100 was started')
-    Trck.start('100').should eq('Task 100 already started')
+    trck('status').should eq("Currently running tasks:\n100 - 0h 0m 0s\n")
 
-    Trck.status.should eq("
-      Currently running tasks:\n
-      100 - 0h 0m 0s
-    ")
-
-    Trck.stop('100').should eq('Task 100 was stopped')
-    Trck.stop('100').should eq('Task 100 is not running')
-
-    Trck.status.should eq("
-      Last tracked tasks:\n
-      100 - 0h 0m 0s
-    ")
-
-    Trck.task.should eq("
-      Tasks:\n
-      100 - 0h 0m 0s
-    ")
-
-    Trck.task('remove', '100').should eq('Task 100 was removed')
-
-    Trck.task.should eq("
-      No tasks found
-    ")
-
-    Trck.status.should eq("
-      Last tracked tasks:\n
-      No tasks found
-    ")
-
-    Trck.start('100').should eq('Task 100 was not found')
-    Trck.add('task', '100').should eq('Task 100 was added')
-    Trck.add('task', '200').should eq('Task 200 was added')
-
-    Trck.start('100').should eq('Task 100 was started')
-    Trck.start('200').should eq('Task 200 was started')
-
-    Trck.status.should eq("
-      Currently running tasks:\n
-      100 - 0h 0m 0s\n
-      200 - 0h 0m 0s\n\n
-    ")
-
-    Trck.stop('100').should eq('Task 100 was stopped')
-
-    Trck.status.should eq("
-      Currently running tasks:\n
-      200 - 0h 0m 0s\n\n
-      Last tracked tasks:\n
-      100 - 0h 0m 0s
-    ")
-
-    Trck.stop('200').should eq('Task 200 was stopped')
-
-    Trck.status.should eq("
-      Last tracked tasks:\n
-      200 - 0h 0m 0s\n
-      100 - 0h 0m 0s
-    ")
-
-    Trck.add('project', 'chatroom').should eq('Project chatroom was added')
-    Trck.add('project', 'chatroom').should eq('Cannot create two projects with same name')
-
-    Trck.project.should eq("
-      Projects:\n
-      chatroom
-    ")
-
-    Trck.add('task', 'chatroom', '100').should eq('Task 100 was added to project chatroom')
-    Trck.add('task', 'chatroom', '100').should eq('Cannot create two tasks with same name')
-
-    Trck.project('abahn', 'tasks').should eq('Project abahn was not found')
-
-    Trck.project('chatroom', 'tasks').should eq("
-      Project chatroom tasks:\n
-      100 - 0h 0m 0s
-    ")
+    trck('stop 100').should eq('Task 100 was stopped')
+    trck('stop 100').should eq('Task 100 is not running')
   end
+
+
+  # it 'does everything' do
+  #   #trck setup 389949494
+
+  #   #trct add task 100
+  #   Trck.add('task', '100').should eq('Task 100 was added')
+  #   Trck.add('task', '100').should eq('Cannot create two tasks with same name')
+
+  #   #trck start 100
+  #   Trck.start('100').should eq('Task 100 was started')
+  #   Trck.start('100').should eq('Task 100 already started')
+
+  #   Trck.status.should eq("
+  #     Currently running tasks:\n
+  #     100 - 0h 0m 0s
+  #   ")
+
+  #   Trck.stop('100').should eq('Task 100 was stopped')
+  #   Trck.stop('100').should eq('Task 100 is not running')
+
+  #   Trck.status.should eq("
+  #     Last tracked tasks:\n
+  #     100 - 0h 0m 0s
+  #   ")
+
+  #   Trck.task.should eq("
+  #     Tasks:\n
+  #     100 - 0h 0m 0s
+  #   ")
+
+  #   Trck.task('remove', '100').should eq('Task 100 was removed')
+
+  #   Trck.task.should eq("
+  #     No tasks found
+  #   ")
+
+  #   Trck.status.should eq("
+  #     Last tracked tasks:\n
+  #     No tasks found
+  #   ")
+
+  #   Trck.start('100').should eq('Task 100 was not found')
+  #   Trck.add('task', '100').should eq('Task 100 was added')
+  #   Trck.add('task', '200').should eq('Task 200 was added')
+
+  #   Trck.start('100').should eq('Task 100 was started')
+  #   Trck.start('200').should eq('Task 200 was started')
+
+  #   Trck.status.should eq("
+  #     Currently running tasks:\n
+  #     100 - 0h 0m 0s\n
+  #     200 - 0h 0m 0s\n\n
+  #   ")
+
+  #   Trck.stop('100').should eq('Task 100 was stopped')
+
+  #   Trck.status.should eq("
+  #     Currently running tasks:\n
+  #     200 - 0h 0m 0s\n\n
+  #     Last tracked tasks:\n
+  #     100 - 0h 0m 0s
+  #   ")
+
+  #   Trck.stop('200').should eq('Task 200 was stopped')
+
+  #   Trck.status.should eq("
+  #     Last tracked tasks:\n
+  #     200 - 0h 0m 0s\n
+  #     100 - 0h 0m 0s
+  #   ")
+
+  #   Trck.add('project', 'chatroom').should eq('Project chatroom was added')
+  #   Trck.add('project', 'chatroom').should eq('Cannot create two projects with same name')
+
+  #   Trck.project.should eq("
+  #     Projects:\n
+  #     chatroom
+  #   ")
+
+  #   Trck.add('task', 'chatroom', '100').should eq('Task 100 was added to project chatroom')
+  #   Trck.add('task', 'chatroom', '100').should eq('Cannot create two tasks with same name')
+
+  #   Trck.project('abahn', 'tasks').should eq('Project abahn was not found')
+
+  #   Trck.project('chatroom', 'tasks').should eq("
+  #     Project chatroom tasks:\n
+  #     100 - 0h 0m 0s
+  #   ")
+  # end
 end

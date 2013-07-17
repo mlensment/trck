@@ -1,9 +1,4 @@
 #!/usr/bin/env ruby
 
 require 'trck'
-
-action = ARGV.shift
-model = ARGV.shift
-options = ARGV
-
-model.send(action, options)
+puts Trck.execute(ARGV)
