@@ -16,8 +16,8 @@ class Trck
       return status if action == 'status'
       return Task.start(args) if action == 'start'
       return Task.stop(args) if action == 'stop'
-      return Task.list if action == 'tasks'
-
+      return Task.list(args) if action == 'tasks'
+      return Project.list if action == 'projects'
 
       model = args.shift
       model = Module.const_get(model.capitalize)

@@ -74,7 +74,11 @@ class Task < Model
   end
 
   class << self
-    def list
+    def list args
+      args.empty? ? list_tasks : Project.list_tasks(args[0])
+    end
+
+    def list_tasks
       tasks = Task.all.collect{|x| "#{x.name} - #{x.formatted_duration}"}
       return message(:no_tasks_found) unless tasks.any?
       tasks.join("\n")
@@ -89,17 +93,25 @@ class Task < Model
     end
 
     def add args
+      args.one? ? add_task(args) : Project.add_task(args)
+    end
+
+    def add_task args
       t = new args[0]
       t.save ? message(:task_added, t.name) : t.messages.first
     end
 
-    def remove args
+    def remove_task args
       t = Task.find_by_name(args[0])
       t.delete ? t.message(:task_removed, t.name) : t.messages.first
     end
 
+    def remove args
+      args.one? ? remove_task(args) : Project.remove_task(args)
+    end
+
     def start args
-      if args.length == 1
+      if args.one?
         t = Task.find_by_name args[0]
         return message(:task_was_not_found, args[0]) unless t
         t.start ? message(:task_started, args[0]) : t.messages.first
@@ -109,7 +121,7 @@ class Task < Model
     end
 
     def stop args
-      if args.length == 1
+      if args.one?
         t = Task.find_by_name args[0]
         return message(:task_was_not_found, args[0]) unless t
         t.stop ? message(:task_stopped, args[0]) : t.messages.first

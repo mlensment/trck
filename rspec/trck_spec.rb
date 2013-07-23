@@ -122,31 +122,42 @@ describe Trck do
 
     trck('status').should eq("Last tracked tasks:\n100 - 0h 0m 0s\n200 - 0h 0m 0s\n")
 
+    trck('projects').should eq("No projects found")
+
     trck('add project chatroom').should eq('Project chatroom was added')
+    trck('add project chatroom').should eq('Cannot create two projects with same name')
+
+    trck('projects').should eq("chatroom")
+
+    trck('add task chatroom 100').should eq('Task 100 was added to project chatroom')
+    trck('add task chatroom 100').should eq('Cannot create two tasks with same name')
+
+    trck('tasks abahn').should eq('Project abahn was not found')
+
+    trck('tasks chatroom').should eq('100 - 0h 0m 0s')
+
+    trck('add task chatroom 200').should eq('Task 200 was added to project chatroom')
+
+    trck('tasks chatroom').should eq("100 - 0h 0m 0s\n200 - 0h 0m 0s")
+
+    trck('add project abahn').should eq('Project abahn was added')
+
+    trck('projects').should eq("chatroom\nabahn")
+
+    trck('tasks abahn').should eq('No tasks found')
+
+    trck('remove task chatroom 100').should eq('Task 100 was removed from project chatroom')
+
+    trck('remove task chatroom 100').should eq('Task 100 was not found in project chatroom')
+
+    trck('tasks chatroom').should eq("200 - 0h 0m 0s")
+
+    trck('remove project abahn').should eq('Project abahn with all tasks was removed')
+
+    trck('remove project abahn').should eq('Project abahn was not found')
+
+    trck('remove project chatroom').should eq('Project chatroom with all tasks was removed')
+
+    trck('projects').should eq("No projects found")
   end
-
-
-  # it 'does everything' do
-  #   #trck setup 389949494
-
-
-
-  #   Trck.add('project', 'chatroom').should eq('Project chatroom was added')
-  #   Trck.add('project', 'chatroom').should eq('Cannot create two projects with same name')
-
-  #   Trck.project.should eq("
-  #     Projects:\n
-  #     chatroom
-  #   ")
-
-  #   Trck.add('task', 'chatroom', '100').should eq('Task 100 was added to project chatroom')
-  #   Trck.add('task', 'chatroom', '100').should eq('Cannot create two tasks with same name')
-
-  #   Trck.project('abahn', 'tasks').should eq('Project abahn was not found')
-
-  #   Trck.project('chatroom', 'tasks').should eq("
-  #     Project chatroom tasks:\n
-  #     100 - 0h 0m 0s
-  #   ")
-  # end
 end
