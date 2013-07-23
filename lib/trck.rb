@@ -16,6 +16,7 @@ class Trck
       return status if action == 'status'
       return Task.start(args) if action == 'start'
       return Task.stop(args) if action == 'stop'
+      return Task.list if action == 'tasks'
 
 
       model = args.shift
@@ -26,9 +27,26 @@ class Trck
 
     def status
       msg = ''
+      msg += running_tasks
+      msg += last_tracked_tasks
+      msg
+    end
+
+    def running_tasks
       running = Task.running
-      msg += "Currently running tasks:\n"
+      return '' unless running.any?
+      msg = "Currently running tasks:\n"
       running.each do |x|
+        msg += "#{x.name} - #{x.formatted_duration}\n"
+      end
+      msg
+    end
+
+    def last_tracked_tasks
+      tracked = Task.tracked
+      return '' unless tracked.any?
+      msg = "Last tracked tasks:\n"
+      tracked.each do |x|
         msg += "#{x.name} - #{x.formatted_duration}\n"
       end
       msg

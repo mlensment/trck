@@ -46,10 +46,10 @@ class Model
     s = Storage.load
     self.messages = []
     if s.data[(self.class.name.downcase + 's').to_sym][name] && !persisted
-      messages << message(:create_same_name_obj)
+      messages << self.class.message(:create_same_name_obj)
     end
 
-    messages << message(:create_without_name_obj) unless name
+    messages << self.message(:create_without_name_obj) unless name
 
     return false if messages.any?
     true
@@ -75,15 +75,29 @@ class Model
   def message key, *args
     msgs = MESSAGES.merge(self.class::MESSAGES)
     m = msgs[key].gsub('{class_name}', self.class.name.downcase)
-
-    args.each_with_index do |x, i|
+    args.flatten.each_with_index do |x, i|
       m.gsub!('%' + i.to_s, x)
     end
 
     m
   end
 
+  def add_message key, *args
+    messages << message(key, args)
+  end
+
   class << self
+    def message key, *args
+      msgs = MESSAGES.merge(self::MESSAGES)
+      m = msgs[key].gsub('{class_name}', self.name.downcase)
+
+      args.each_with_index do |x, i|
+        m.gsub!('%' + i.to_s, x)
+      end
+
+      m
+    end
+
     def find_by_name name
       s = Storage.load
       if s.data[(self.name.downcase + 's').to_sym][name]
