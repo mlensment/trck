@@ -159,5 +159,43 @@ describe Trck do
     trck('remove project chatroom').should eq('Project chatroom with all tasks was removed')
 
     trck('projects').should eq("No projects found")
+
+    trck('add project abahn').should eq('Project abahn was added')
+
+    trck('organizations').should eq('No organizations found')
+
+    trck('add organization deskrock').should eq('Organization deskrock was added')
+
+    trck('organizations').should eq('deskrock')
+
+    trck('add organization friendlyfinance').should eq('Organization friendlyfinance was added')
+    trck('add organization friendlyfinance').should eq('Cannot create two organizations with same name')
+
+    trck('organizations').should eq("deskrock\nfriendlyfinance")
+
+    trck('select organization deskrock').should eq('Organization deskrock was selected')
+
+    trck('organizations').should eq("=> deskrock\nfriendlyfinance")
+
+    trck('projects').should eq('No projects found in organization deskrock')
+
+    trck('add project ccs').should eq('Project ccs was added to organization deskrock')
+
+    trck('projects').should eq("Projects in organization deskrock:\nccs")
+
+    trck('add project abahn').should eq('Project abahn was added to organization deskrock')
+
+    trck('tasks abahn').should eq('No tasks found')
+
+    trck('add task abahn refactoring').should eq('Task refactoring was added to project abahn')
+
+    trck('tasks abahn').should eq('refactoring - 0h 0m 0s')
+
+    trck('add task abahn algorithm').should eq('Task algorithm was added to project abahn')
+    trck('add task abahn algorithm').should eq('Cannot create two tasks with same name')
+
+    trck('tasks abahn').should eq("refactoring - 0h 0m 0s\nalgorithm - 0h 0m 0s")
+
+    trck('start abahn refactoring').should eq('Task refactoring was started')
   end
 end

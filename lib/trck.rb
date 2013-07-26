@@ -18,6 +18,7 @@ class Trck
       return Task.stop(args) if action == 'stop'
       return Task.list(args) if action == 'tasks'
       return Project.list if action == 'projects'
+      return Organization.list if action == 'organizations'
 
       model = args.shift
       model = Module.const_get(model.capitalize)

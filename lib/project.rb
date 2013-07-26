@@ -62,6 +62,10 @@ class Project < Model
 
   class << self
     def list
+      Organization.find_active ? Organization.list_projects : list_projects
+    end
+
+    def list_projects
       projects = Project.all.collect(&:name)
       return message(:no_projects_found) unless projects.any?
       projects.join("\n")
@@ -78,6 +82,10 @@ class Project < Model
     end
 
     def add args
+      Organization.find_active ? Organization.add_project(args) : add_project(args)
+    end
+
+    def add_project args
       p = new args[0]
       p.save ? message(:project_added, p.name) : p.messages.first
     end
@@ -96,6 +104,12 @@ class Project < Model
     def remove_task args
       p = Project.find_by_name(args[0])
       p.remove_task(args[1]) ? message(:task_removed_from_project, args[1], args[0]) : p.messages.first
+    end
+
+    def start_task args
+      p = Project.find_by_name(args[0])
+      t = p.find_task(args[1])
+      # t.start ?
     end
   end
 

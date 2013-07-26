@@ -111,13 +111,13 @@ class Task < Model
     end
 
     def start args
-      if args.one?
-        t = Task.find_by_name args[0]
-        return message(:task_was_not_found, args[0]) unless t
-        t.start ? message(:task_started, args[0]) : t.messages.first
-      else
-        #TODO
-      end
+      args.one? ? start_task(args) : Project.start_task(args)
+    end
+
+    def start_task args
+      t = Task.find_by_name args[0]
+      return message(:task_was_not_found, args[0]) unless t
+      t.start ? message(:task_started, args[0]) : t.messages.first
     end
 
     def stop args
