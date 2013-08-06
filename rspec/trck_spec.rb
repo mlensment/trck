@@ -85,9 +85,11 @@ describe Trck do
 
   it 'does everything' do
     trck('add task 100').should eq('Task 100 was added')
+
     trck('add task 100').should eq('Cannot create two tasks with same name')
 
     trck('start 100').should eq('Task 100 was started')
+
     trck('start 100').should eq('Task 100 already started')
 
     trck('status').should eq("Currently running tasks:\n100 - 0h 0m 0s\n")

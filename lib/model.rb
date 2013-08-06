@@ -1,8 +1,9 @@
+require 'digest/sha1'
 require 'storage'
 require 'pry'
 
 class Model
-  attr_accessor :name, :persisted, :messages
+  attr_accessor :primary_key, :name, :persisted, :messages
   # ACTIONS = ["ADD","REMOVE"]
 
   # def execute action, options
@@ -45,7 +46,8 @@ class Model
   def valid?
     s = Storage.load
     self.messages = []
-    if s.data[(self.class.name.downcase + 's').to_sym][name] && !persisted
+
+    if find_from_db && !persisted
       messages << self.class.message(:create_same_name_obj)
     end
 
@@ -56,19 +58,28 @@ class Model
   end
 
   def save
-    s = Storage.load
+    generate_primary_key unless primary_key
     if valid?
+      s = Storage.load
       self.persisted = true
-      s.data[(self.class.name.downcase + 's').to_sym][name] = to_hash
+      s.data[(self.class.name.downcase + 's').to_sym].delete(primary_key)
+      s.data[(self.class.name.downcase + 's').to_sym][primary_key] = self
       (s.save) ? self : false
     else
       false
     end
   end
 
+
+  def generate_primary_key
+    p = project.name if defined?(project) && project
+    o = organization.name if defined?(organization) && organization
+    self.primary_key = Digest::SHA1.hexdigest("#{name}#{p}#{o}")
+  end
+
   def delete
     s = Storage.load
-    s.data[(self.class.name.downcase + 's').to_sym].delete(name)
+    s.data[(self.class.name.downcase + 's').to_sym].delete(self.primary_key)
     s.save
   end
 
@@ -86,6 +97,11 @@ class Model
     messages << message(key, args)
   end
 
+  def find_from_db
+    s = Storage.load
+    s.data[(self.class.name.downcase + 's').to_sym][primary_key]
+  end
+
   class << self
     def message key, *args
       msgs = MESSAGES.merge(self::MESSAGES)
@@ -100,16 +116,21 @@ class Model
 
     def find_by_name name
       s = Storage.load
-      if s.data[(self.name.downcase + 's').to_sym][name]
-        Module.const_get(self.name).new(s.data[(self.name.downcase + 's').to_sym][name])
-      end
+
+      all = s.data[(self.name.downcase + 's').to_sym]
+      all.select{|x| x[:name] == name}.first
+    end
+
+    def find k
+      return nil unless k
+      s = Storage.load
+      k = Digest::SHA1.hexdigest(k)
+      s.data[(self.name.downcase + 's').to_sym][k]
     end
 
     def all
       s = Storage.load
-      s.data[(self.name.downcase + 's').to_sym].collect{|k, v|
-        Module.const_get(self.name).new(v)
-      }
+      s.data[(self.name.downcase + 's').to_sym].collect{|k, v| v}
     end
   end
 end

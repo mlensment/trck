@@ -1,7 +1,6 @@
 require 'storage'
 require 'organization'
 
-
 class Trck
   class << self
     def setup input

@@ -26,7 +26,7 @@ class Task < Model
   end
 
   def organization
-    Organization.find_by_name(organization_name)
+    Organization.find(organization_name)
   end
 
   def project=(project)
@@ -34,7 +34,7 @@ class Task < Model
   end
 
   def project
-    Project.find_by_name(project_name)
+    Project.find("#{project_name}#{organization_name}")
   end
 
   def start
@@ -102,7 +102,7 @@ class Task < Model
     end
 
     def remove_task args
-      t = Task.find_by_name(args[0])
+      t = Task.find(args[0])
       t.delete ? t.message(:task_removed, t.name) : t.messages.first
     end
 
@@ -115,14 +115,16 @@ class Task < Model
     end
 
     def start_task args
-      t = Task.find_by_name args[0]
+      o = Organization.find_active
+      o_name = o.name if o
+      t = Task.find("#{args[0]}#{args[1]}#{o_name}")
       return message(:task_was_not_found, args[0]) unless t
       t.start ? message(:task_started, args[0]) : t.messages.first
     end
 
     def stop args
       if args.one?
-        t = Task.find_by_name args[0]
+        t = Task.find(args[0])
         return message(:task_was_not_found, args[0]) unless t
         t.stop ? message(:task_stopped, args[0]) : t.messages.first
       else

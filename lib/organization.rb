@@ -79,7 +79,7 @@ class Organization < Model
     end
 
     def select args
-      o = Organization.find_by_name(args[0])
+      o = Organization.find(args[0])
       return message(:org_not_found, args[0]) unless o
       o.mark_active ? message(:org_selected, args[0]) : o.messages.first
     end
