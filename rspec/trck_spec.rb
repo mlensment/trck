@@ -11,6 +11,9 @@ describe Trck do
   end
 
   it 'does everything' do
+
+  # tasks without projects, basic functionality
+
     trck('add task 100').should eq('Task 100 was added')
 
     trck('add task 100').should eq('Cannot create two tasks with same name')
@@ -36,6 +39,8 @@ describe Trck do
 
     trck('start 100').should eq('Task 100 was not found')
 
+# two simultaneously running tasks
+
     trck('add task 100').should eq('Task 100 was added')
     trck('add task 200').should eq('Task 200 was added')
 
@@ -51,6 +56,8 @@ describe Trck do
 
     trck('status').should eq("Last tracked tasks:\n100 - 0h 0m 0s\n200 - 0h 0m 0s\n")
 
+# Projects
+
     trck('projects').should eq("No projects found")
 
     trck('add project chatroom').should eq('Project chatroom was added')
@@ -58,22 +65,24 @@ describe Trck do
 
     trck('projects').should eq("chatroom")
 
-    trck('add task chatroom 100').should eq('Task 100 was added to project chatroom')
-    trck('add task chatroom 100').should eq('Cannot create two tasks with same name')
-
     trck('tasks abahn').should eq('Project abahn was not found')
-
-    trck('tasks chatroom').should eq('100 - 0h 0m 0s')
-
-    trck('add task chatroom 200').should eq('Task 200 was added to project chatroom')
-
-    trck('tasks chatroom').should eq("100 - 0h 0m 0s\n200 - 0h 0m 0s")
 
     trck('add project abahn').should eq('Project abahn was added')
 
+    trck('tasks abahn').should eq('No tasks found')
+
     trck('projects').should eq("chatroom\nabahn")
 
-    trck('tasks abahn').should eq('No tasks found')
+# tasks in projects
+
+    trck('add task chatroom 100').should eq('Task 100 was added to project chatroom')
+    trck('add task chatroom 100').should eq('Cannot create two tasks with same name')
+
+    trck('tasks chatroom').should eq('100 - not started')
+
+    trck('add task chatroom 200').should eq('Task 200 was added to project chatroom')
+
+    trck('tasks chatroom').should eq("100 - not started\n200 - not started")
 
     trck('remove task chatroom 100').should eq('Task 100 was removed from project chatroom')
 
@@ -81,7 +90,35 @@ describe Trck do
 
     trck('tasks chatroom').should eq("200 - 0h 0m 0s")
 
-    trck('remove project abahn').should eq('Project abahn with all tasks was removed')
+    trck('add task abahn calendar').should eq('Task calendar was added to project abahn')
+
+    trck('add task calendar').should eq('Cannot create two tasks with same name')
+
+    trck('start abahn calendar').should eq('Task calendar was started')
+
+    trck('start abahn calendar').should eq('Task calendar already started')
+
+    trck('status abahn').should eq("Currently running tasks:\ncalendar - 0h 0m 0s\n") #no functionality?
+
+    trck('stop abahn calendar').should eq('Task calendar was stopped')
+    trck('stop abahn calendar').should eq('Task calendar is not running')
+
+    trck('status abahn').should eq("Last tracked tasks in project:\calendar - 0h 0m 0s\n")
+
+    trck('tasks abahn').should eq("calendar - 0h 0m 0s")
+
+    trck('remove task abahn calendar').should eq('Task calendar was removed')
+
+    trck('tasks abahn').should eq(" No tasks found")
+
+    trck('status abahn').should eq("")
+
+    trck('start calendar').should eq('Task calendar was not found')
+
+
+# removing projects
+
+    trck('remove project abahn').should eq('Project abahn with all tasks was removed') no functionality
 
     trck('remove project abahn').should eq('Project abahn was not found')
 
@@ -89,45 +126,6 @@ describe Trck do
 
     trck('projects').should eq("No projects found")
 
-    trck('add project abahn').should eq('Project abahn was added')
 
-    trck('organizations').should eq('No organizations found')
-
-    trck('add organization deskrock').should eq('Organization deskrock was added')
-
-    trck('organizations').should eq('deskrock')
-
-    trck('add organization friendlyfinance').should eq('Organization friendlyfinance was added')
-    trck('add organization friendlyfinance').should eq('Cannot create two organizations with same name')
-
-    trck('organizations').should eq("deskrock\nfriendlyfinance")
-
-    trck('select organization deskrock').should eq('Organization deskrock was selected')
-
-    trck('organizations').should eq("=> deskrock\nfriendlyfinance")
-
-    trck('projects').should eq('No projects found in organization deskrock')
-
-    trck('add project ccs').should eq('Project ccs was added to organization deskrock')
-
-    trck('projects').should eq("Projects in organization deskrock:\nccs")
-
-    trck('add project abahn').should eq('Project abahn was added to organization deskrock')
-
-    trck('tasks abahn').should eq('No tasks found')
-
-    trck('add task abahn refactoring').should eq('Task refactoring was added to project abahn')
-
-    trck('tasks abahn').should eq('refactoring - 0h 0m 0s')
-
-    trck('add task abahn algorithm').should eq('Task algorithm was added to project abahn')
-    trck('add task abahn algorithm').should eq('Cannot create two tasks with same name')
-
-    trck('tasks abahn').should eq("refactoring - 0h 0m 0s\nalgorithm - 0h 0m 0s")
-
-    trck('start abahn refactoring').should eq('Task refactoring was started')
-    trck('start abahn refactoring').should eq('Task refactoring already started')
-
-    trck('status').should eq('Currently running tasks:\nrefactoring - 0h 0m 0s')
   end
 end
