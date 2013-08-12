@@ -22,6 +22,7 @@ class Task < Model
   end
 
   def organization=(organization)
+    return unless organization
     self.organization_name = organization.name
   end
 
@@ -85,7 +86,12 @@ class Task < Model
     end
 
     def running
-      Task.all.select(&:running)
+      o = Organization.find_active
+      if o
+        Task.all.select{|x| x.running && x.organization_name == o.name}
+      else
+        Task.all.select(&:running)
+      end
     end
 
     def tracked

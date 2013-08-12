@@ -31,7 +31,8 @@ class Project < Model
 
     t = Task.new({
       name: name,
-      project: self
+      project: self,
+      organization: self.organization
     })
 
     if t.save
