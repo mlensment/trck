@@ -10,9 +10,9 @@ describe Trck do
     s.reset
   end
 
-  it 'does everything' do
+it 'handles basic task commands' do
 
-  # tasks without projects, basic functionality
+    # tasks without projects, basic functionality
 
     trck('add task 100').should eq('Task 100 was added')
 
@@ -39,9 +39,12 @@ describe Trck do
 
     trck('start 100').should eq('Task 100 was not found')
 
-# two simultaneously running tasks
+end
+
+it 'handles two simultaneously running tasks' do
 
     trck('add task 100').should eq('Task 100 was added')
+
     trck('add task 200').should eq('Task 200 was added')
 
     trck('start 100').should eq('Task 100 was started')
@@ -56,7 +59,10 @@ describe Trck do
 
     trck('status').should eq("Last tracked tasks:\n100 - 0h 0m 0s\n200 - 0h 0m 0s\n")
 
-# Projects
+end
+
+
+it 'handles projects' do
 
     trck('projects').should eq("No projects found")
 
@@ -73,9 +79,11 @@ describe Trck do
 
     trck('projects').should eq("chatroom\nabahn")
 
-# tasks in projects
+end
 
+it 'handles tasks in projects' do
     trck('add task chatroom 100').should eq('Task 100 was added to project chatroom')
+
     trck('add task chatroom 100').should eq('Cannot create two tasks with same name')
 
     trck('tasks chatroom').should eq('100 - not started')
@@ -114,9 +122,9 @@ describe Trck do
     trck('status abahn').should eq("")
 
     trck('start calendar').should eq('Task calendar was not found')
+end
 
-
-# removing projects
+it 'removes projects' do
 
     trck('remove project abahn').should eq('Project abahn with all tasks was removed') no functionality
 
@@ -125,7 +133,6 @@ describe Trck do
     trck('remove project chatroom').should eq('Project chatroom with all tasks was removed')
 
     trck('projects').should eq("No projects found")
+end
 
-
-  end
 end
