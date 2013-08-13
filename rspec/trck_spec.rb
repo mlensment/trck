@@ -10,6 +10,12 @@ describe Trck do
     s.reset
   end
 
+  after(:all) do
+      s = Storage.load
+      s.reset
+  end
+
+
 it 'handles basic task commands' do
 
     # tasks without projects, basic functionality
