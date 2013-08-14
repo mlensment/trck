@@ -75,6 +75,7 @@ it 'handles projects' do
     trck('projects').should eq("No projects found")
 
     trck('add project chatroom').should eq('Project chatroom was added')
+
     trck('add project chatroom').should eq('Cannot create two projects with same name')
 
     trck('projects').should eq("chatroom")
@@ -86,7 +87,6 @@ it 'handles projects' do
     trck('tasks abahn').should eq('No tasks found')
 
     trck('projects').should eq("chatroom\nabahn")
-
 end
 
 it 'handles tasks in projects' do
@@ -108,29 +108,29 @@ it 'handles tasks in projects' do
 
     trck('remove task chatroom 100').should eq('Task 100 was not found in project chatroom')
 
-    trck('tasks chatroom').should eq("200 - 0h 0m 0s")
+    trck('tasks chatroom').should eq("200 - not started")
 
     #other project
     trck('add project abahn').should eq('Project abahn was added')
 
     trck('add task abahn calendar').should eq('Task calendar was added to project abahn')
 
-    trck('add task calendar').should eq('Cannot create two tasks with same name')
+    trck('add task abahn calendar').should eq('Cannot create two tasks with same name')
 
     trck('start abahn calendar').should eq('Task calendar was started')
 
-    trck('status abahn').should eq("Currently running tasks:\ncalendar - 0h 0m 0s\n") #no functionality?
+    trck('status abahn').should eq("Currently running tasks:\ncalendar - 0h 0m 0s\n")
 
     trck('stop abahn calendar').should eq('Task calendar was stopped')
     trck('stop abahn calendar').should eq('Task calendar is not running')
 
-    trck('status abahn').should eq("Last tracked tasks in project:\calendar - 0h 0m 0s\n")
+    trck('status abahn').should eq("Last tracked tasks:\ncalendar - 0h 0m 0s\n")
 
     trck('tasks abahn').should eq("calendar - 0h 0m 0s")
 
-    trck('remove task abahn calendar').should eq('Task calendar was removed')
+    trck('remove task abahn calendar').should eq('Task calendar was removed from project abahn')
 
-    trck('tasks abahn').should eq(" No tasks found")
+    trck('tasks abahn').should eq("No tasks found")
 
     trck('status abahn').should eq("")
 

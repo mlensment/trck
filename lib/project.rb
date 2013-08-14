@@ -1,10 +1,7 @@
 require 'model'
-require 'organization'
 require 'task'
 
 class Project < Model
-  attr_accessor :organization_name
-
   MESSAGES = {
     project_added: 'Project %0 was added',
     no_projects_found: 'No projects found',
@@ -16,23 +13,15 @@ class Project < Model
     task_not_found_in_project: 'Task %0 was not found in project %1',
     project_with_tasks_removed: 'Project %0 with all tasks was removed',
     task_started: 'Task %0 was started',
+    task_stopped: 'Task %0 was stopped'
   }
-
-  def organization=(organization)
-    self.organization_name = organization.name
-  end
-
-  def organization
-    Organization.find(organization_name)
-  end
 
   def add_task name
     add_message(:cannot_add_task_project_not_saved) and return false unless persisted
 
     t = Task.new({
       name: name,
-      project: self,
-      organization: self.organization
+      project: self
     })
 
     if t.save
@@ -64,17 +53,13 @@ class Project < Model
 
   class << self
     def list
-      Organization.find_active ? Organization.list_projects : list_projects
-    end
-
-    def list_projects
       projects = Project.all.collect(&:name)
       return message(:no_projects_found) unless projects.any?
       projects.join("\n")
     end
 
     def list_tasks name
-      p = Project.find(name)
+      p = Project.find_by_name(name)
       return message(:project_was_not_found, name) unless p
       return message(:no_tasks_found) unless p.tasks.any?
 
@@ -84,34 +69,36 @@ class Project < Model
     end
 
     def add args
-      Organization.find_active ? Organization.add_project(args) : add_project(args)
-    end
-
-    def add_project args
       p = new args[0]
       p.save ? message(:project_added, p.name) : p.messages.first
     end
 
     def add_task args
-      p = Project.find(args[0])
+      p = Project.find_by_name(args[0])
       p.add_task(args[1]) ? message(:task_added_to_project, args[1], args[0]) : p.messages.first
     end
 
     def remove args
-      p = Project.find(args[0])
+      p = Project.find_by_name(args[0])
       return message(:project_was_not_found, args[0]) unless p
       p.destroy ? message(:project_with_tasks_removed, args[0]) : p.messages.first
     end
 
     def remove_task args
-      p = Project.find(args[0])
+      p = Project.find_by_name(args[0])
       p.remove_task(args[1]) ? message(:task_removed_from_project, args[1], args[0]) : p.messages.first
     end
 
     def start_task args
-      p = Project.find(args[0])
+      p = Project.find_by_name(args[0])
       t = p.find_task(args[1])
       t.start ? message(:task_started, args[1]) : t.messages.first
+    end
+
+    def stop_task args
+      p = Project.find_by_name(args[0])
+      t = p.find_task(args[1])
+      t.stop ? message(:task_stopped, args[1]) : t.messages.first
     end
   end
 

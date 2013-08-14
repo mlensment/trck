@@ -3,13 +3,7 @@ require 'storage'
 require 'pry'
 
 class Model
-  attr_accessor :primary_key, :name, :persisted, :messages
-  # ACTIONS = ["ADD","REMOVE"]
-
-  # def execute action, options
-  #   result = self.send(action, options) if ACTIONS.includes?(action)
-  #   echo "#{self.class.to_s} #{action} #{result ? ok : not_ok}"
-  # end
+  attr_accessor :name, :persisted, :messages
 
   MESSAGES = {
     create_same_name_obj: "Cannot create two {class_name}s with same name",
@@ -58,12 +52,11 @@ class Model
   end
 
   def save
-    generate_primary_key unless primary_key
     if valid?
       s = Storage.load
       self.persisted = true
-      s.data[(self.class.name.downcase + 's').to_sym].delete(primary_key)
-      s.data[(self.class.name.downcase + 's').to_sym][primary_key] = self
+      s.data[(self.class.name.downcase + 's').to_sym].delete(name)
+      s.data[(self.class.name.downcase + 's').to_sym][name] = self
       (s.save) ? self : false
     else
       false
@@ -71,15 +64,9 @@ class Model
   end
 
 
-  def generate_primary_key
-    p = project.name if defined?(project) && project
-    o = organization.name if defined?(organization) && organization
-    self.primary_key = Digest::SHA1.hexdigest("#{name}#{p}#{o}")
-  end
-
   def delete
     s = Storage.load
-    s.data[(self.class.name.downcase + 's').to_sym].delete(self.primary_key)
+    s.data[(self.class.name.downcase + 's').to_sym].delete(name)
     s.save
   end
 
@@ -99,7 +86,7 @@ class Model
 
   def find_from_db
     s = Storage.load
-    s.data[(self.class.name.downcase + 's').to_sym][primary_key]
+    s.data[(self.class.name.downcase + 's').to_sym][name]
   end
 
   class << self
@@ -116,9 +103,7 @@ class Model
 
     def find_by_name name
       s = Storage.load
-
-      all = s.data[(self.name.downcase + 's').to_sym]
-      all.select{|x| x[:name] == name}.first
+      s.data[(self.name.downcase + 's').to_sym][name]
     end
 
     def find k

@@ -1,9 +1,8 @@
 require 'model'
-require 'organization'
 require 'project'
 
 class Task < Model
-  attr_accessor :organization_name, :project_name, :start_at, :end_at, :running, :duration
+  attr_accessor :project_name, :start_at, :end_at, :running, :duration
 
   MESSAGES = {
     task_added: 'Task %0 was added',
@@ -21,21 +20,12 @@ class Task < Model
     super
   end
 
-  def organization=(organization)
-    return unless organization
-    self.organization_name = organization.name
-  end
-
-  def organization
-    Organization.find(organization_name)
-  end
-
   def project=(project)
     self.project_name = project.name
   end
 
   def project
-    Project.find("#{project_name}#{organization_name}")
+    Project.find("#{project_name}")
   end
 
   def start
@@ -68,6 +58,7 @@ class Task < Model
   end
 
   def formatted_duration
+    return 'not started' unless start_at
     hours = duration / 3600.to_i
     minutes = (duration / 60 - hours * 60).to_i
     seconds = (duration - (minutes * 60 + hours * 3600))
@@ -86,12 +77,7 @@ class Task < Model
     end
 
     def running
-      o = Organization.find_active
-      if o
-        Task.all.select{|x| x.running && x.organization_name == o.name}
-      else
-        Task.all.select(&:running)
-      end
+      Task.all.select(&:running)
     end
 
     def tracked
@@ -108,7 +94,7 @@ class Task < Model
     end
 
     def remove_task args
-      t = Task.find(args[0])
+      t = Task.find_by_name(args[0])
       t.delete ? t.message(:task_removed, t.name) : t.messages.first
     end
 
@@ -120,22 +106,20 @@ class Task < Model
       args.one? ? start_task(args) : Project.start_task(args)
     end
 
+    def stop args
+      args.one? ? stop_task(args) : Project.stop_task(args)
+    end
+
     def start_task args
-      o = Organization.find_active
-      o_name = o.name if o
-      t = Task.find("#{args[0]}#{args[1]}#{o_name}")
+      t = Task.find_by_name(args[0])
       return message(:task_was_not_found, args[0]) unless t
       t.start ? message(:task_started, args[0]) : t.messages.first
     end
 
-    def stop args
-      if args.one?
-        t = Task.find(args[0])
-        return message(:task_was_not_found, args[0]) unless t
-        t.stop ? message(:task_stopped, args[0]) : t.messages.first
-      else
-        #TODO
-      end
+    def stop_task args
+      t = Task.find_by_name(args[0])
+      return message(:task_was_not_found, args[0]) unless t
+      t.stop ? message(:task_stopped, args[0]) : t.messages.first
     end
   end
 end
