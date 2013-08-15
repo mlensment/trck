@@ -26,8 +26,8 @@ it 'handles basic task commands' do
 
     trck('status').should eq("Currently running tasks:\n100 - 0h 0m 0s\n")
 
-    trck('stop 100').should eq('Task 100 was stopped')
-    trck('stop 100').should eq('Task 100 is not running')
+    trck('stop').should eq('Task 100 was stopped')
+    trck('stop').should eq('No tasks are being tracked')
 
     trck('status').should eq("Last tracked tasks:\n100 - 0h 0m 0s\n")
 
@@ -39,7 +39,7 @@ it 'handles basic task commands' do
 
     trck('status').should eq("")
 
-    trck('start 100').should eq('Task 100 was not found')
+    trck('start 100').should eq('?')
 
 end
 
@@ -51,12 +51,12 @@ it 'gives information about multiple tasks' do
     trck('start 200').should eq('Task 200 was started')
 
     trck('status').should eq("Currently running tasks:\n100 - 0h 0m 0s\n200 - 0h 0m 0s\n")
-    trck('stop 100').should eq('Task 100 was stopped')
+    trck('stop').should eq('Task 100 was stopped')
 
     trck('status').should eq("Currently running tasks:\n200 - 0h 0m 0s\nLast tracked tasks:\n100 - 0h 0m 0s\n")
 
-    trck('stop 200').should eq('Task 200 was stopped')
-
+    trck('stop').should eq('Task 200 was stopped')
+k
     trck('status').should eq("Last tracked tasks:\n100 - 0h 0m 0s\n200 - 0h 0m 0s\n")
 
 end
@@ -89,8 +89,8 @@ it 'handles tasks in projects' do
 
     trck('status abahn').should eq("Currently running tasks:\ncalendar - 0h 0m 0s\n")
 
-    trck('stop abahn calendar').should eq('Task calendar was stopped')
-    trck('stop abahn calendar').should eq('Task calendar is not running')
+    trck('stop').should eq('Task calendar was stopped')
+    trck('stop').should eq('No tasks are being tracked')
 
     trck('status abahn').should eq("Last tracked tasks:\ncalendar - 0h 0m 0s\n")
 
@@ -125,7 +125,7 @@ it 'removes project but keeps tasks' do
     trck('remove project myproject').should eq('Project myproject was not found') #no functionality
 
     trck('start myproject calendar').should eq('Task calendar was started in project myproject')
-    trck('stop myproject calendar').should eq('Task calendar was stopped in project myproject')
+    trck('stop').should eq('Task calendar was stopped in project myproject')
 
 end
 
@@ -134,7 +134,7 @@ it 'shows status about multiple projects' do #no functionality
     trck('add project second_project').should eq('Project second_project was added')
 
     trck('start myproject eatlunch').should eq('Task eatlunch was started in project myproject')
-    trck('stop myproject eatlunch').should eq('Task eatlunch was stopped')
+    trck('stop').should eq('Task eatlunch was stopped')
 
     trck('start second_project eatdinner').should eq('Task eatdinner was started')
 
