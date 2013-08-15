@@ -20,10 +20,6 @@ it 'handles basic task commands' do
 
     # tasks without projects, basic functionality
 
-    trck('add task 100').should eq('Task 100 was added')
-
-    trck('add task 100').should eq('Cannot create two tasks with same name')
-
     trck('start 100').should eq('Task 100 was started')
 
     trck('start 100').should eq('Task 100 already started')
@@ -48,10 +44,6 @@ it 'handles basic task commands' do
 end
 
 it 'gives information about multiple tasks' do
-
-    trck('add task 100').should eq('Task 100 was added')
-
-    trck('add task 200').should eq('Task 200 was added')
 
     trck('start 100').should eq('Task 100 was started')
     trck('start 100').should eq('Task 100 already started')
@@ -91,33 +83,9 @@ end
 
 it 'handles tasks in projects' do
 
-    #first project
-    trck('add project chatroom').should eq('Project chatroom was added')
-
-    trck('add task chatroom 100').should eq('Task 100 was added to project chatroom')
-
-    trck('add task chatroom 100').should eq('Cannot create two tasks with same name')
-
-    trck('tasks chatroom').should eq('100 - not started')
-
-    trck('add task chatroom 200').should eq('Task 200 was added to project chatroom')
-
-    trck('tasks chatroom').should eq("100 - not started\n200 - not started")
-
-    trck('remove task chatroom 100').should eq('Task 100 was removed from project chatroom')
-
-    trck('remove task chatroom 100').should eq('Task 100 was not found in project chatroom')
-
-    trck('tasks chatroom').should eq("200 - not started")
-
-    #other project
     trck('add project abahn').should eq('Project abahn was added')
 
-    trck('add task abahn calendar').should eq('Task calendar was added to project abahn')
-
-    trck('add task abahn calendar').should eq('Cannot create two tasks with same name')
-
-    trck('start abahn calendar').should eq('Task calendar was started')
+    trck('start abahn calendar').should eq('Task calendar was started in project abahn')
 
     trck('status abahn').should eq("Currently running tasks:\ncalendar - 0h 0m 0s\n")
 
@@ -153,30 +121,24 @@ it 'removes project but keeps tasks' do
 
     trck('add project myproject').should eq('Project myproject was added')
 
-    trck('add task myproject calendar').should eq('Task calendar was added to project myproject')
-
     trck('remove project myproject').should eq('Project myproject was removed') #no functionality
     trck('remove project myproject').should eq('Project myproject was not found') #no functionality
 
-    trck('start calendar').should eq('Task calendar was started')
-    trck('stop calendar').should eq('Task calendar was stopped')
+    trck('start myproject calendar').should eq('Task calendar was started in project myproject')
+    trck('stop myproject calendar').should eq('Task calendar was stopped in project myproject')
 
 end
 
 it 'shows status about multiple projects' do #no functionality
-        trck('add project myproject').should eq('Project myproject was added')
-        trck('add project second_project').should eq('Project second_project was added')
+    trck('add project myproject').should eq('Project myproject was added')
+    trck('add project second_project').should eq('Project second_project was added')
 
-        trck('add task myproject eatlunch').should eq('Task eatlunch was added to project myproject')
-        trck('start myproject eatlunch').should eq('Task eatlunch was started')
-        trck('stop myproject eatlunch').should eq('Task eatlunch was stopped')
-        trck('add task myproject whatever').should eq('Task whatever was added to project myproject')
+    trck('start myproject eatlunch').should eq('Task eatlunch was started in project myproject')
+    trck('stop myproject eatlunch').should eq('Task eatlunch was stopped')
 
+    trck('start second_project eatdinner').should eq('Task eatdinner was started')
 
-        trck('add task second_project eatdinner').should eq('Task eatdinner was added to project second_project')
-        trck('start second_project eatdinner').should eq('Task eatdinner was started')
-
-        trck('status').should eq("Currently running tasks:\nsecond_project\n\teatdinner - 0h 0m 0s\nLast tracked tasks:\nmyproject\n\teatlunch - 0h 0m 0s\n\twhatever - not started\n")
+    trck('status').should eq("Currently running tasks:\nsecond_project\n\teatdinner - 0h 0m 0s\nLast tracked tasks:\nmyproject\n\teatlunch - 0h 0m 0s")
 end
 
 
