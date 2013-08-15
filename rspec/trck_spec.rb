@@ -113,6 +113,7 @@ end
 
 
 it 'shows status about multiple projects' do #no functionality
+
     trck('add project myproject').should eq('Added project myproject')
     trck('add project second_project').should eq('Added project second_project')
 
@@ -124,5 +125,29 @@ it 'shows status about multiple projects' do #no functionality
     trck('status').should eq("Currently tracking tasks:\nsecond_project\n\teatdinner - 0h 0m 0s\nLast tracked tasks:\nmyproject\n\teatlunch - 0h 0m 0s")
 end
 
+it 'handles selecting projects' do
+
+    trck('add project myproject').should eq('Added project myproject')
+    trck('add project other_project').should eq('Added project other_project')
+
+    trck('select project myproject').should eq('Now tracking in project myproject')
+
+    trck('projects').should eq("=> myproject\nother_project")
+
+    trck('start 100').should eq('Created and tracking task 100 in myproject')
+
+    trck('select project other_project').should eq('Now tracking in project other_project')
+
+    trck('start 200').should eq('Created and tracking task 200 in other_project')
+
+    trck('projects').should eq("myproject\n=> other_project")
+
+    trck('exit project').should eq('Now tracking without a project')
+
+    trck('exit project').should eq('Already tracking without a project')
+
+    trck('projects').should eq("myproject\nother_project")
+
+end
 
 end
