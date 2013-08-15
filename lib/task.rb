@@ -5,14 +5,12 @@ class Task < Model
   attr_accessor :project_name, :start_at, :end_at, :running, :duration
 
   MESSAGES = {
-    task_added: 'Task %0 was added',
-    task_removed: 'Task %0 was removed',
-    task_started: 'Task %0 was started',
-    task_stopped: 'Task %0 was stopped',
-    task_not_running: 'Task %0 is not running',
-    task_already_started: 'Task %0 already started',
+    task_removed: 'Removed task %0',
+    task_started: 'Created and tracking task %0',
+    task_stopped: 'Finished tracking task %0',
+    task_already_started: 'Already tracking task %0',
     no_tasks_found: 'No tasks found',
-    task_was_not_found: 'Task %0 was not found'
+    task_not_running: 'No tasks are being tracked'
   }
 
   def initialize args = {}
@@ -58,7 +56,6 @@ class Task < Model
   end
 
   def formatted_duration
-    return 'not started' unless start_at
     hours = duration / 3600.to_i
     minutes = (duration / 60 - hours * 60).to_i
     seconds = (duration - (minutes * 60 + hours * 3600))

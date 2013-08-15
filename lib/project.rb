@@ -3,17 +3,17 @@ require 'task'
 
 class Project < Model
   MESSAGES = {
-    project_added: 'Project %0 was added',
+    project_added: 'Added project %0',
     no_projects_found: 'No projects found',
     cannot_add_task_project_not_saved: 'Cannot add task - project is not saved',
     project_was_not_found: 'Project %0 was not found',
     no_tasks_found: 'No tasks found',
     task_added_to_project: 'Task %0 was added to project %1',
-    task_removed_from_project: 'Task %0 was removed from project %1',
+    task_removed_from_project: 'Removed task %0 from project %1',
     task_not_found_in_project: 'Task %0 was not found in project %1',
-    project_with_tasks_removed: 'Project %0 with all tasks was removed',
-    task_started: 'Task %0 was started',
-    task_stopped: 'Task %0 was stopped'
+    project_with_tasks_removed: 'Removed project %1 with all its tasks',
+    task_started: 'Created and tracking task %0 in project %1',
+    task_stopped: 'Finished tracking task %0 in project %1'
   }
 
   def add_task name

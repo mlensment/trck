@@ -34,7 +34,7 @@ class Trck
     def running_tasks
       running = Task.running
       return '' unless running.any?
-      msg = "Currently running tasks:\n"
+      msg = "Currently tracking tasks:\n"
       running.each do |x|
         msg += "#{x.name} - #{x.formatted_duration}\n"
       end
