@@ -18,63 +18,53 @@ describe Trck do
 
 it 'handles basic task commands' do
 
-    # tasks without projects, basic functionality
+    trck('start 100').should eq('Created and tracking task 100')
+    trck('start 100').should eq('Already tracking task 100')
 
-    trck('start 100').should eq('Task 100 was started')
+    trck('status').should eq("Currently tracking tasks:\n100 - 0h 0m 0s\n")
 
-    trck('start 100').should eq('Task 100 already started')
-
-    trck('status').should eq("Currently running tasks:\n100 - 0h 0m 0s\n")
-
-    trck('stop').should eq('Task 100 was stopped')
+    trck('stop').should eq('Finished tracking task 100')
     trck('stop').should eq('No tasks are being tracked')
 
     trck('status').should eq("Last tracked tasks:\n100 - 0h 0m 0s\n")
 
     trck('tasks').should eq("100 - 0h 0m 0s")
 
-    trck('remove task 100').should eq('Task 100 was removed')
+    trck('remove 100').should eq('Removed task 100')
 
     trck('tasks').should eq("No tasks found")
 
     trck('status').should eq("")
 
-    trck('start 100').should eq('?')
-
+    trck('start 100').should eq('Tracking task 100')
 end
 
-it 'gives information about multiple tasks' do
+it 'ends previous tracking task and starts new' do
 
-    trck('start 100').should eq('Task 100 was started')
-    trck('start 100').should eq('Task 100 already started')
+    trck('start 100').should eq('Created and tracking task 100')
 
-    trck('start 200').should eq('Task 200 was started')
+    trck('start 200').should eq('Finished tracking task 100, created and tracking task 200')
 
-    trck('status').should eq("Currently running tasks:\n100 - 0h 0m 0s\n200 - 0h 0m 0s\n")
-    trck('stop').should eq('Task 100 was stopped')
+    trck('status').should eq("Currently tracking tasks:\n200 - 0h 0m 0s\nLast tracked tasks:\n100 - 0h 0m 0s\n")
 
-    trck('status').should eq("Currently running tasks:\n200 - 0h 0m 0s\nLast tracked tasks:\n100 - 0h 0m 0s\n")
+    trck('stop').should eq('Finished tracking task 200')
 
-    trck('stop').should eq('Task 200 was stopped')
-k
     trck('status').should eq("Last tracked tasks:\n100 - 0h 0m 0s\n200 - 0h 0m 0s\n")
-
 end
-
 
 it 'handles projects' do
 
     trck('projects').should eq("No projects found")
 
-    trck('add project chatroom').should eq('Project chatroom was added')
+    trck('add project chatroom').should eq('Added project chatroom')
 
-    trck('add project chatroom').should eq('Cannot create two projects with same name')
+    trck('add project chatroom').should eq('Cannot create two projects with the same name')
 
     trck('projects').should eq("chatroom")
 
     trck('tasks abahn').should eq('Project abahn was not found')
 
-    trck('add project abahn').should eq('Project abahn was added')
+    trck('add project abahn').should eq('Added project abahn')
 
     trck('tasks abahn').should eq('No tasks found')
 
@@ -83,62 +73,55 @@ end
 
 it 'handles tasks in projects' do
 
-    trck('add project abahn').should eq('Project abahn was added')
+    trck('add project abahn').should eq('Added project abahn')
 
-    trck('start abahn calendar').should eq('Task calendar was started in project abahn')
+    trck('start abahn calendar').should eq('Created and tracking task calendar in project abahn')
 
-    trck('status abahn').should eq("Currently running tasks:\ncalendar - 0h 0m 0s\n")
+    trck('status abahn').should eq("Currently tracking tasks:\ncalendar - 0h 0m 0s\n")
 
-    trck('stop').should eq('Task calendar was stopped')
+    trck('stop').should eq('Finished tracking task 100 in project abahn')
     trck('stop').should eq('No tasks are being tracked')
 
     trck('status abahn').should eq("Last tracked tasks:\ncalendar - 0h 0m 0s\n")
 
-    trck('tasks abahn').should eq("calendar - 0h 0m 0s")
+    trck('tasks abahn').should eq('calendar - 0h 0m 0s')
 
-    trck('remove task abahn calendar').should eq('Task calendar was removed from project abahn')
+    trck('remove abahn calendar').should eq('Removed task calendar from project abahn')
 
-    trck('tasks abahn').should eq("No tasks found")
+    trck('tasks abahn').should eq('No tasks found')
 
-    trck('status abahn').should eq("")
+    trck('status abahn').should eq('')
 
-    trck('start calendar').should eq('Task calendar was not found')
+    trck('start abahn calendar').should eq('Created and tracking task calendar in project abahn')
 end
 
 it 'removes projects with all its tasks' do
 
-    trck('add project abahn').should eq('Project abahn was added')
+    trck('add project abahn').should eq('Added project abahn')
 
-    trck('remove project abahn -r').should eq('Project abahn with all tasks was removed') #no functionality
+    trck('start abahn layout').should eq('Created and tracking task layout in project abahn')
+    trck('stop').should eq('Finished tracking task layout in project abahn')
 
-    trck('remove project abahn -r').should eq('Project abahn was not found')
+    trck('remove project abahn').should eq('Removed project abahn with all its tasks') #no functionality
 
-    trck('projects').should eq("No projects found")
+    trck('remove project abahn').should eq('Project abahn was not found')
 
+    trck('projects').should eq('No projects found')
+
+    trck('start abahn layout').should eq('Project abahn was not found')
 end
 
-it 'removes project but keeps tasks' do
-
-    trck('add project myproject').should eq('Project myproject was added')
-
-    trck('remove project myproject').should eq('Project myproject was removed') #no functionality
-    trck('remove project myproject').should eq('Project myproject was not found') #no functionality
-
-    trck('start myproject calendar').should eq('Task calendar was started in project myproject')
-    trck('stop').should eq('Task calendar was stopped in project myproject')
-
-end
 
 it 'shows status about multiple projects' do #no functionality
-    trck('add project myproject').should eq('Project myproject was added')
-    trck('add project second_project').should eq('Project second_project was added')
+    trck('add project myproject').should eq('Added project myproject')
+    trck('add project second_project').should eq('Added project second_project')
 
-    trck('start myproject eatlunch').should eq('Task eatlunch was started in project myproject')
-    trck('stop').should eq('Task eatlunch was stopped')
+    trck('start myproject eatlunch').should eq('Created and tracking task eatlunch in project myproject')
+    trck('stop').should eq('Finished tracking task eatlunch')
 
-    trck('start second_project eatdinner').should eq('Task eatdinner was started')
+    trck('start second_project eatdinner').should eq('Created and tracking task eatdinner in project second_project')
 
-    trck('status').should eq("Currently running tasks:\nsecond_project\n\teatdinner - 0h 0m 0s\nLast tracked tasks:\nmyproject\n\teatlunch - 0h 0m 0s")
+    trck('status').should eq("Currently tracking tasks:\nsecond_project\n\teatdinner - 0h 0m 0s\nLast tracked tasks:\nmyproject\n\teatlunch - 0h 0m 0s")
 end
 
 
