@@ -6,11 +6,12 @@ class Task < Model
 
   MESSAGES = {
     task_removed: 'Removed task %0',
-    task_started: 'Created and tracking task %0',
+    task_started: 'Tracking task %0',
     task_stopped: 'Finished tracking task %0',
     task_already_started: 'Already tracking task %0',
     no_tasks_found: 'No tasks found',
-    task_not_running: 'No tasks are being tracked'
+    task_not_running: 'No tasks are being tracked',
+    task_created_and_started: 'Created and tracking task %0'
   }
 
   def initialize args = {}
@@ -23,21 +24,15 @@ class Task < Model
   end
 
   def project
-    Project.find("#{project_name}")
+    Project.find_by_name(project_name)
   end
 
   def start
     add_message(:task_already_started, name) and return false if running
-
     self.start_at = Time.now
     self.running = true
 
-    if save
-      add_message(:task_started, name)
-      return true
-    end
-
-    false
+    save
   end
 
   def stop
@@ -47,12 +42,7 @@ class Task < Model
     self.duration = (end_at - start_at).to_i
     self.running = false
 
-    if save
-      add_message(:task_stopped, name)
-      return true
-    end
-
-    false
+    save
   end
 
   def formatted_duration
@@ -103,20 +93,32 @@ class Task < Model
       args.one? ? start_task(args) : Project.start_task(args)
     end
 
-    def stop args
-      args.one? ? stop_task(args) : Project.stop_task(args)
+    def stop
+      t = Task.all.select(&:running).first
+      return message(:task_not_running) unless t
+      t.stop ? message(:task_stopped, t.name) : t.messages.first
     end
 
     def start_task args
       t = Task.find_by_name(args[0])
-      return message(:task_was_not_found, args[0]) unless t
-      t.start ? message(:task_started, args[0]) : t.messages.first
+      if t
+        t.start ? message(:task_started, t.name) : t.messages.first
+      else
+        t = new args[0]
+        return t.messages.first unless t.save
+        t.start ? message(:task_created_and_started, args[0]) : t.messages.first
+      end
     end
 
     def stop_task args
       t = Task.find_by_name(args[0])
       return message(:task_was_not_found, args[0]) unless t
       t.stop ? message(:task_stopped, args[0]) : t.messages.first
+    end
+
+    def all
+      s = Storage.load
+      s.data[(self.name.downcase + 's').to_sym].collect{|k, v| v}
     end
   end
 end

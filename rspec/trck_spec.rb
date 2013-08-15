@@ -36,7 +36,7 @@ it 'handles basic task commands' do
 
     trck('status').should eq("")
 
-    trck('start 100').should eq('Tracking task 100')
+    trck('start 100').should eq('Created and tracking task 100')
 end
 
 it 'ends previous tracking task and starts new' do

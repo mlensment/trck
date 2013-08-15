@@ -2,6 +2,7 @@ require 'model'
 require 'task'
 
 class Project < Model
+  attr_accessor :tasks
   MESSAGES = {
     project_added: 'Added project %0',
     no_projects_found: 'No projects found',
@@ -24,31 +25,38 @@ class Project < Model
       project: self
     })
 
-    if t.save
-      return true
-    else
-      messages << t.messages.first
-      false
+    t.tasks << t
+    if save
+      add_message(:task_added_to_project, name)
+      true
     end
-  end
 
-  def tasks
-    Task.all.select{|x| x.project_name == self.name}
+    false
   end
 
   def find_task name
-    tasks.select{|x| x.name == name}.first
+    tasks[name]
   end
 
   def remove_task name
-    t = find_task(name)
-    add_message(:task_not_found_in_project, name, self.name) and return false unless t
-    t.delete
+    add_message(:task_not_found_in_project, name, self.name) and return false unless tasks[name]
+    tasks.delete(name)
+
+    if save
+      add_message(:task_removed_from_project, name)
+      true
+    end
+
+    false
   end
 
   def destroy
-    tasks.each(&:delete)
-    delete
+    if delete
+      add_message(:project_with_tasks_removed, self.name)
+      true
+    end
+
+    false
   end
 
   class << self
