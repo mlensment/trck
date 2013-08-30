@@ -6,8 +6,9 @@ class Model
   attr_accessor :name, :persisted, :messages
 
   MESSAGES = {
-    create_same_name_obj: "Cannot create two {class_name}s with same name",
-    create_without_name_obj: "Cannot create {class_name} without name"
+    create_same_name_obj: "Cannot create two {class_name}s with the same name",
+    create_without_name_obj: "Cannot create {class_name} without name",
+    not_found: "%0 %1 was not found"
   }
 
   def initialize args = {}
@@ -42,12 +43,10 @@ class Model
     self.messages = []
 
     if find_from_db && !persisted
-      messages << self.class.message(:create_same_name_obj)
+      raise self.class.message(:create_same_name_obj)
     end
 
-    messages << self.message(:create_without_name_obj) unless name
-
-    return false if messages.any?
+    raise self.message(:create_without_name_obj) unless name
     true
   end
 
@@ -103,7 +102,9 @@ class Model
 
     def find_by_name name
       s = Storage.load
-      s.data[(self.name.downcase + 's').to_sym][name]
+      ret = s.data[(self.name.downcase + 's').to_sym][name]
+      raise message(:not_found, self.name, name) unless ret
+      ret
     end
 
     def find k

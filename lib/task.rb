@@ -11,7 +11,9 @@ class Task < Model
     task_already_started: 'Already tracking task %0',
     no_tasks_found: 'No tasks found',
     task_not_running: 'No tasks are being tracked',
-    task_created_and_started: 'Created and tracking task %0'
+    task_created_and_started: 'Created and tracking task %0',
+    task_stopped_created_and_started: 'Finished tracking task %0, created and tracking task %1',
+    task_stopped_in_project: 'Finished tracking task %0 in project %1'
   }
 
   def initialize args = {}
@@ -28,7 +30,7 @@ class Task < Model
   end
 
   def start
-    add_message(:task_already_started, name) and return false if running
+    raise message(:task_already_started, name) if running
     self.start_at = Time.now
     self.running = true
 
@@ -36,7 +38,7 @@ class Task < Model
   end
 
   def stop
-    add_message(:task_not_running, name) and return false unless running
+    raise message(:task_not_running, name) unless running
 
     self.end_at = Time.now
     self.duration = (end_at - start_at).to_i
@@ -50,6 +52,14 @@ class Task < Model
     minutes = (duration / 60 - hours * 60).to_i
     seconds = (duration - (minutes * 60 + hours * 3600))
     return "#{hours}h #{minutes}m #{seconds}s"
+  end
+
+  def save
+    if project
+      project.save
+    else
+      save
+    end
   end
 
   class << self
@@ -77,12 +87,14 @@ class Task < Model
 
     def add_task args
       t = new args[0]
-      t.save ? message(:task_added, t.name) : t.messages.first
+      t.save
+      message(:task_added, t.name)
     end
 
     def remove_task args
       t = Task.find_by_name(args[0])
-      t.delete ? t.message(:task_removed, t.name) : t.messages.first
+      t.delete
+      message(:task_removed, t.name)
     end
 
     def remove args
@@ -96,29 +108,43 @@ class Task < Model
     def stop
       t = Task.all.select(&:running).first
       return message(:task_not_running) unless t
-      t.stop ? message(:task_stopped, t.name) : t.messages.first
+      t.stop
+      return message(:task_stopped_in_project, t.name, t.project.name) if t.project
+      message(:task_stopped, t.name)
+    end
+
+    def stop_create_start(args)
+      t_stop = Task.all.select(&:running).first.stop
+      t_start = new(args[0]).save
+      t_start.start
+      message(:task_stopped_created_and_started, t_stop.name, t_start.name)
     end
 
     def start_task args
       t = Task.find_by_name(args[0])
+      return stop_create_start(args) if running.any? && !t
+
       if t
-        t.start ? message(:task_started, t.name) : t.messages.first
+        t.start
+        message(:task_started, t.name)
       else
-        t = new args[0]
-        return t.messages.first unless t.save
-        t.start ? message(:task_created_and_started, args[0]) : t.messages.first
+        t = new(args[0]).save
+        t.start
+        message(:task_created_and_started, args[0])
       end
     end
 
     def stop_task args
       t = Task.find_by_name(args[0])
       return message(:task_was_not_found, args[0]) unless t
-      t.stop ? message(:task_stopped, args[0]) : t.messages.first
+      t.stop
+      message(:task_stopped, args[0])
     end
 
     def all
       s = Storage.load
       s.data[(self.name.downcase + 's').to_sym].collect{|k, v| v}
+      s.data[:project]
     end
   end
 end

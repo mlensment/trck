@@ -9,20 +9,24 @@ class Trck
     end
 
     def execute args
-      args =  args.split(' ') if args.kind_of?(String)
-      action = args.shift
+      begin
+        args =  args.split(' ') if args.kind_of?(String)
+        action = args.shift
 
-      return status if action == 'status'
-      return Task.start(args) if action == 'start'
-      return Task.stop if action == 'stop'
-      return Task.remove(args) if action == 'remove'
-      return Task.list(args) if action == 'tasks'
-      return Project.list if action == 'projects'
+        return status if action == 'status'
+        return Task.start(args) if action == 'start'
+        return Task.stop if action == 'stop'
+        return Task.remove(args) if action == 'remove'
+        return Task.list(args) if action == 'tasks'
+        return Project.list if action == 'projects'
 
-      model = args.shift
-      model = Module.const_get(model.capitalize)
-      options = args
-      model.send(action, options)
+        model = args.shift
+        model = Module.const_get(model.capitalize)
+        options = args
+        model.send(action, options)
+      rescue Exception => e
+        e.message
+      end
     end
 
     def status

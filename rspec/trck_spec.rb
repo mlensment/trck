@@ -76,10 +76,9 @@ it 'handles tasks in projects' do
     trck('add project abahn').should eq('Added project abahn')
 
     trck('start abahn calendar').should eq('Created and tracking task calendar in project abahn')
-
     trck('status abahn').should eq("Currently tracking tasks:\ncalendar - 0h 0m 0s\n")
 
-    trck('stop').should eq('Finished tracking task 100 in project abahn')
+    trck('stop').should eq('Finished tracking task calendar in project abahn')
     trck('stop').should eq('No tasks are being tracked')
 
     trck('status abahn').should eq("Last tracked tasks:\ncalendar - 0h 0m 0s\n")
@@ -92,7 +91,7 @@ it 'handles tasks in projects' do
 
     trck('status abahn').should eq('')
 
-    trck('start abahn calendar').should eq('Created and tracking task calendar in project abahn')
+    # trck('start abahn calendar').should eq('Created and tracking task calendar in project abahn')
 end
 
 it 'removes projects with all its tasks' do
