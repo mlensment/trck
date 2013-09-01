@@ -3,7 +3,7 @@ require 'storage'
 require 'pry'
 
 class Model
-  attr_accessor :name, :persisted, :messages
+  attr_accessor :primary_key ,:name, :persisted, :messages
 
   MESSAGES = {
     create_same_name_obj: "Cannot create two {class_name}s with the same name",
@@ -40,13 +40,7 @@ class Model
 
   def valid?
     s = Storage.load
-    self.messages = []
-
-    if find_from_db && !persisted
-      raise self.class.message(:create_same_name_obj)
-    end
-
-    raise self.message(:create_without_name_obj) unless name
+    raise self.message(:create_without_name_obj) unless self.name
     true
   end
 
@@ -54,8 +48,8 @@ class Model
     if valid?
       s = Storage.load
       self.persisted = true
-      s.data[(self.class.name.downcase + 's').to_sym].delete(name)
-      s.data[(self.class.name.downcase + 's').to_sym][name] = self
+      s.data[(self.class.name.downcase + 's').to_sym].delete(self.primary_key)
+      s.data[(self.class.name.downcase + 's').to_sym][self.primary_key] = self
       (s.save) ? self : false
     else
       false
@@ -65,7 +59,7 @@ class Model
 
   def delete
     s = Storage.load
-    s.data[(self.class.name.downcase + 's').to_sym].delete(name)
+    s.data[(self.class.name.downcase + 's').to_sym].delete(self.primary_key)
     s.save
   end
 
@@ -81,6 +75,13 @@ class Model
 
   def add_message key, *args
     messages << message(key, args)
+  end
+
+  def generate_primary_key
+    if defined?(self.project) && self.project
+      p = self.project.name
+    end
+    Digest::SHA1.hexdigest(p + '-' + self.name)
   end
 
   def find_from_db
@@ -103,7 +104,6 @@ class Model
     def find_by_name name
       s = Storage.load
       ret = s.data[(self.name.downcase + 's').to_sym][name]
-      raise message(:not_found, self.name, name) unless ret
       ret
     end
 

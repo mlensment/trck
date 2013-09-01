@@ -17,7 +17,6 @@ describe Trck do
 
 
 it 'handles basic task commands' do
-
     trck('start 100').should eq('Created and tracking task 100')
     trck('start 100').should eq('Already tracking task 100')
 
@@ -40,7 +39,6 @@ it 'handles basic task commands' do
 end
 
 it 'ends previous tracking task and starts new' do
-
     trck('start 100').should eq('Created and tracking task 100')
 
     trck('start 200').should eq('Finished tracking task 100, created and tracking task 200')
@@ -60,15 +58,15 @@ it 'handles projects' do
 
     trck('add project chatroom').should eq('Cannot create two projects with the same name')
 
-    trck('projects').should eq("chatroom")
+    # trck('projects').should eq("chatroom")
 
-    trck('tasks abahn').should eq('Project abahn was not found')
+    # trck('tasks abahn').should eq('Project abahn was not found')
 
-    trck('add project abahn').should eq('Added project abahn')
+    # trck('add project abahn').should eq('Added project abahn')
 
-    trck('tasks abahn').should eq('No tasks found')
+    # trck('tasks abahn').should eq('No tasks found')
 
-    trck('projects').should eq("chatroom\nabahn")
+    # trck('projects').should eq("chatroom\nabahn")
 end
 
 it 'handles tasks in projects' do
