@@ -58,9 +58,9 @@ it 'handles projects' do
 
     trck('add project chatroom').should eq('Cannot create two projects with the same name')
 
-    # trck('projects').should eq("chatroom")
+    trck('projects').should eq("chatroom")
 
-    # trck('tasks abahn').should eq('Project abahn was not found')
+    trck('tasks abahn').should eq('Project abahn was not found')
 
     # trck('add project abahn').should eq('Added project abahn')
 

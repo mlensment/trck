@@ -1,10 +1,12 @@
+require 'digest/sha1'
 require 'model'
 require 'task'
 
 class Project < Model
   attr_accessor :tasks
   MESSAGES = {
-    project_added: 'Added project %0',
+    added_project: 'Added project %0',
+
     no_projects_found: 'No projects found',
     cannot_add_task_project_not_saved: 'Cannot add task - project is not saved',
     project_was_not_found: 'Project %0 was not found',
@@ -20,6 +22,7 @@ class Project < Model
 
   def initialize args = {}
     self.tasks = {}
+    self.primary_key = Project.generate_primary_key(args[:name])
     super
   end
 
@@ -51,6 +54,13 @@ class Project < Model
     delete
   end
 
+  def valid?
+    if Project.find_by_name(name) && !persisted
+      raise self.class.message(:create_same_name_obj)
+    end
+    super
+  end
+
   class << self
     def list
       projects = Project.all.collect(&:name)
@@ -58,59 +68,19 @@ class Project < Model
       projects.join("\n")
     end
 
-    def list_tasks name
-      p = Project.find_by_name(name)
-      return message(:no_tasks_found) unless p.tasks.any?
-      p.tasks.collect do |k, v|
-       "#{v.name} - #{v.formatted_duration}"
-      end.join("\n")
-    end
-
     def add args
-      p = new args[0]
-      p.save
-      message(:project_added, p.name)
+      new({name: args[0]}).save
+      return message(:added_project, args[0])
     end
 
-    def add_task args
-      p = Project.find_by_name(args[0])
-      p.add_task(args[1])
-      message(:task_added_to_project, args[1], args[0])
+    def find_by_name name
+      s = Storage.load
+      pk = generate_primary_key(name)
+      s.data[:projects][pk]
     end
 
-    def remove args
-      p = Project.find_by_name(args[0])
-      return message(:project_was_not_found, args[0]) unless p
-      p.destroy
-      message(:project_with_tasks_removed, args[0])
-    end
-
-    def remove_task args
-      p = Project.find_by_name(args[0])
-      p.remove_task(args[1])
-      message(:task_removed_from_project, args[1], args[0])
-    end
-
-    def create_start args
-      p = Project.find_by_name(args[0])
-      t = p.add_task(args[1])
-      t.start
-      message(:task_created_and_started, args[1], p.name)
-    end
-
-    def start_task args
-      p = Project.find_by_name(args[0])
-      t = p.find_task(args[1])
-      return create_start args unless t
-      t.start
-      message(:task_started, args[1])
-    end
-
-    def stop_task args
-      p = Project.find_by_name(args[0])
-      t = p.find_task(args[1])
-      t.stop
-      message(:task_stopped, args[1])
+    def generate_primary_key name
+      Digest::SHA1.hexdigest(name)
     end
   end
 

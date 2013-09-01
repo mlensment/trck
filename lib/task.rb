@@ -30,7 +30,7 @@ class Task < Model
       raise message(:project_was_not_found, project_name) unless p
     end
 
-    self.primary_key = self.class.generate_primary_key(args[:name], args[:project_name])
+    self.primary_key = Task.generate_primary_key(args[:name], args[:project_name])
     super
   end
 
@@ -68,7 +68,7 @@ class Task < Model
   end
 
   def valid?
-    if self.class.find_by_name_and_project_name(name, project_name) && !persisted
+    if Task.find_by_name_and_project_name(name, project_name) && !persisted
       raise self.class.message(:create_same_name_obj)
     end
     super
