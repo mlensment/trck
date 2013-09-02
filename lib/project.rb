@@ -3,9 +3,10 @@ require 'model'
 require 'task'
 
 class Project < Model
-  attr_accessor :tasks
   MESSAGES = {
     added_project: 'Added project %0',
+    created_and_tracking_task_in_project: 'Created and tracking task %0 in project %1',
+    removed_task_from_project: 'Removed task %0 from project %1',
 
     no_projects_found: 'No projects found',
     cannot_add_task_project_not_saved: 'Cannot add task - project is not saved',
@@ -21,7 +22,6 @@ class Project < Model
   }
 
   def initialize args = {}
-    self.tasks = {}
     self.primary_key = Project.generate_primary_key(args[:name])
     super
   end
@@ -34,20 +34,16 @@ class Project < Model
       project: self
     })
 
-    self.tasks[name] = t
     save
     t
   end
 
-  def find_task name
-    tasks[name]
+  def tasks
+    Task.all.select{|x| x.project_name == self.name}
   end
 
-  def remove_task name
-    raise message(:task_not_found_in_project, name, self.name) unless tasks[name]
-    tasks.delete(name)
-
-    save
+  def find_task name
+    Task.find_by_name_and_project_name(name, self.name)
   end
 
   def remove
@@ -62,15 +58,41 @@ class Project < Model
   end
 
   class << self
-    def list
+    def list_projects
       projects = Project.all.collect(&:name)
       return message(:no_projects_found) unless projects.any?
       projects.join("\n")
     end
 
+    def list_tasks args
+      p = Project.find_by_name(args[0])
+      return message(:project_was_not_found, args[0]) unless p
+      tasks = p.tasks.collect{|x| x.name + " - " + x.formatted_duration}
+      return message(:no_tasks_found) unless tasks.any?
+      tasks.join("\n")
+    end
+
     def add args
       new({name: args[0]}).save
       return message(:added_project, args[0])
+    end
+
+    def start_task args
+      p = Project.find_by_name(args[0])
+      return message(:project_was_not_found, args[0]) unless p
+      t = p.find_task(args[1])
+      return Project.create_and_start_task(args) unless t
+    end
+
+    def create_and_start_task args
+      Task.new({name: args[1], project_name: args[0]}).save.start
+      message(:created_and_tracking_task_in_project, args[1], args[0])
+    end
+
+    def remove_task args
+      t = Task.find_by_name_and_project_name(args[1], args[0])
+      t.delete
+      message(:removed_task_from_project, args[1], args[0])
     end
 
     def find_by_name name

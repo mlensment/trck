@@ -10,6 +10,8 @@ class Task < Model
     finished_tracking_task: 'Finished tracking task %0',
     removed_task: 'Removed task %0',
     finished_tracking_task_created_and_tracking_task: 'Finished tracking task %0, created and tracking task %1',
+    project_was_not_found: 'Project %0 was not found',
+    finished_tracking_task_in_project: 'Finished tracking task %0 in project %1',
 
     task_removed: 'Removed task %0',
     task_started: 'Tracking task %0',
@@ -79,50 +81,35 @@ class Task < Model
   end
 
   class << self
-    def list args
-      if args.any?
-
-      else
-        tasks = Task.without_project.collect{|x| x.name + " - " + x.formatted_duration}
-        return message(:no_tasks_found) unless tasks.any?
-        return tasks.join("\n")
-      end
+    def list_tasks
+      tasks = Task.without_project.collect{|x| x.name + " - " + x.formatted_duration}
+      return message(:no_tasks_found) unless tasks.any?
+      return tasks.join("\n")
     end
 
-    def remove args
-      if args.one?
-        t = Task.find_by_name_and_project_name(args[0])
-      else
-        t = Task.find_by_name_and_project_name(args[1], args[0])
-      end
-
+    def remove_task args
+      t = Task.find_by_name_and_project_name(args[0])
       t.delete
-      return message(:removed_task, t.name) unless t.project
+      return message(:removed_task, t.name)
     end
 
-    def start args
-      if args.one?
-        t = Task.find_by_name_and_project_name(args[0])
+    def start_task args
+      t = Task.find_by_name_and_project_name(args[0])
 
-        if t
-          return message(:already_tracking_task, args[0]) if t.running?
-        else
-          return Task.stop_and_create_and_start(args[0]) if Task.running.any? && !t
-          return Task.create_and_start(args[0]) unless t
-        end
-
-
-
+      if t
+        return message(:already_tracking_task, args[0]) if t.running?
       else
-
+        return Task.stop_and_create_and_start(args[0]) if Task.running.any? && !t
+        return Task.create_and_start(args[0]) unless t
       end
     end
 
-    def stop
+    def stop_task
       t = running.first
       return message(:no_tasks_are_being_tracked) unless t
       t.stop
-      message(:finished_tracking_task, t.name)
+      message(:finished_tracking_task, t.name) unless t.project_name
+      message(:finished_tracking_task_in_project, t.name, t.project_name)
     end
 
     def create_and_start name, project_name = nil
@@ -138,7 +125,7 @@ class Task < Model
 
     ### SCOPES ###
     def without_project
-      Task.all.select{|x| !x.project}
+      Task.all.select{|x| !x.project_name}
     end
 
     def running

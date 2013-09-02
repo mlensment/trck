@@ -62,11 +62,11 @@ it 'handles projects' do
 
     trck('tasks abahn').should eq('Project abahn was not found')
 
-    # trck('add project abahn').should eq('Added project abahn')
+    trck('add project abahn').should eq('Added project abahn')
 
-    # trck('tasks abahn').should eq('No tasks found')
+    trck('tasks abahn').should eq('No tasks found')
 
-    # trck('projects').should eq("chatroom\nabahn")
+    trck('projects').should eq("chatroom\nabahn")
 end
 
 it 'handles tasks in projects' do
@@ -89,7 +89,7 @@ it 'handles tasks in projects' do
 
     trck('status abahn').should eq('')
 
-    # trck('start abahn calendar').should eq('Created and tracking task calendar in project abahn')
+    trck('start abahn calendar').should eq('Created and tracking task calendar in project abahn')
 end
 
 it 'removes projects with all its tasks' do
