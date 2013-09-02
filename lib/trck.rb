@@ -19,8 +19,10 @@ class Trck
           return Task.start_task(args) if action == 'start' # trck start 100
           return Task.remove_task(args) if action == 'remove' # trck remove 100
           return Project.list_tasks(args) if action == 'tasks' # trck tasks abahn
+          return Project.exit if action == 'exit' # trck exit project
         else
           return Project.start_task(args) if action == 'start' # trck start abahn 100
+          return Project.remove_project(args) if action == 'remove' && get_arg(args, 'project')
           return Project.remove_task(args) if action == 'remove' # trck remove abahn 100
           return Task.list_tasks if action == 'tasks' # trck tasks
           return Task.stop_task if action == 'stop' # trck stop
@@ -48,7 +50,11 @@ class Trck
       return '' unless running.any?
       msg = "Currently tracking tasks:\n"
       running.each do |x|
-        msg += "#{x.name} - #{x.formatted_duration}\n"
+        if x.project_name
+          msg += "#{x.project_name} #{x.name} - #{x.formatted_duration}\n"
+        else
+          msg += "#{x.name} - #{x.formatted_duration}\n"
+        end
       end
       msg
     end
@@ -58,7 +64,11 @@ class Trck
       return '' unless tracked.any?
       msg = "Last tracked tasks:\n"
       tracked.each do |x|
-        msg += "#{x.name} - #{x.formatted_duration}\n"
+        if x.project_name
+          msg += "#{x.project_name} #{x.name} - #{x.formatted_duration}\n"
+        else
+          msg += "#{x.name} - #{x.formatted_duration}\n"
+        end
       end
       msg
     end
@@ -68,8 +78,8 @@ class Trck
     end
 
     def get_arg args, arg
-      if args.index('-R')
-        args.delete_at(args.index('-R'))
+      if args.index(arg)
+        args.delete_at(args.index(arg))
         args
       end
     end

@@ -74,12 +74,12 @@ it 'handles tasks in projects' do
     trck('add project abahn').should eq('Added project abahn')
 
     trck('start abahn calendar').should eq('Created and tracking task calendar in project abahn')
-    trck('status abahn').should eq("Currently tracking tasks:\ncalendar - 0h 0m 0s\n")
+    trck('status abahn').should eq("Currently tracking tasks:\nabahn calendar - 0h 0m 0s\n")
 
     trck('stop').should eq('Finished tracking task calendar in project abahn')
     trck('stop').should eq('No tasks are being tracked')
 
-    trck('status abahn').should eq("Last tracked tasks:\ncalendar - 0h 0m 0s\n")
+    trck('status abahn').should eq("Last tracked tasks:\nabahn calendar - 0h 0m 0s\n")
 
     trck('tasks abahn').should eq('calendar - 0h 0m 0s')
 
@@ -115,11 +115,11 @@ it 'shows status about multiple projects' do #no functionality
     trck('add project second_project').should eq('Added project second_project')
 
     trck('start myproject eatlunch').should eq('Created and tracking task eatlunch in project myproject')
-    trck('stop').should eq('Finished tracking task eatlunch')
+    trck('stop').should eq('Finished tracking task eatlunch in project myproject')
 
     trck('start second_project eatdinner').should eq('Created and tracking task eatdinner in project second_project')
 
-    trck('status').should eq("Currently tracking tasks:\nsecond_project\n\teatdinner - 0h 0m 0s\nLast tracked tasks:\nmyproject\n\teatlunch - 0h 0m 0s")
+    trck('status').should eq("Currently tracking tasks:\nsecond_project eatdinner - 0h 0m 0s\nLast tracked tasks:\nmyproject eatlunch - 0h 0m 0s\n")
 end
 
 it 'handles selecting projects' do
@@ -129,13 +129,13 @@ it 'handles selecting projects' do
 
     trck('select project myproject').should eq('Now tracking in project myproject')
 
-    trck('projects').should eq("=> myproject\nother_project")
+    trck('projects').should eq("other_project\n=> myproject")
 
-    trck('start 100').should eq('Created and tracking task 100 in myproject')
+    trck('start 100').should eq('Created and tracking task 100 in project myproject')
 
     trck('select project other_project').should eq('Now tracking in project other_project')
 
-    trck('start 200').should eq('Created and tracking task 200 in other_project')
+    trck('start 200').should eq('Finished tracking task 100, created and tracking task 200 in project other_project')
 
     trck('projects').should eq("myproject\n=> other_project")
 

@@ -10,8 +10,10 @@ class Task < Model
     finished_tracking_task: 'Finished tracking task %0',
     removed_task: 'Removed task %0',
     finished_tracking_task_created_and_tracking_task: 'Finished tracking task %0, created and tracking task %1',
+    finished_tracking_task_created_and_tracking_task_in_project: 'Finished tracking task %0, created and tracking task %1 in project %2',
     project_was_not_found: 'Project %0 was not found',
     finished_tracking_task_in_project: 'Finished tracking task %0 in project %1',
+    created_and_tracking_task_in_project: 'Created and tracking task %0 in project %1',
 
     task_removed: 'Removed task %0',
     task_started: 'Tracking task %0',
@@ -108,19 +110,23 @@ class Task < Model
       t = running.first
       return message(:no_tasks_are_being_tracked) unless t
       t.stop
-      message(:finished_tracking_task, t.name) unless t.project_name
+      return message(:finished_tracking_task, t.name) unless t.project_name
       message(:finished_tracking_task_in_project, t.name, t.project_name)
     end
 
     def create_and_start name, project_name = nil
+      project_name = project_name || Project.get_selected_project_name
       new({name: name, project_name: project_name}).save.start
-      message(:created_and_tracking_task, name)
+      return message(:created_and_tracking_task, name) unless project_name
+      message(:created_and_tracking_task_in_project, name, project_name)
     end
 
     def stop_and_create_and_start name, project_name = nil
+      project_name = project_name || Project.get_selected_project_name
       t = Task.running.first.stop
       new({name: name, project_name: project_name}).save.start
-      message(:finished_tracking_task_created_and_tracking_task, t.name, name)
+      return message(:finished_tracking_task_created_and_tracking_task, t.name, name) unless project_name
+      message(:finished_tracking_task_created_and_tracking_task_in_project, t.name, name, project_name)
     end
 
     ### SCOPES ###
