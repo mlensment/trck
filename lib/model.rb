@@ -25,19 +25,6 @@ class Model
     end
   end
 
-  def reload!
-    m = Module.const_get(self.class.name).find_by_name(self.name)
-    instance_variables.each do |k|
-      instance_variable_set(k, m.instance_variable_get(k))
-    end
-  end
-
-  def to_hash
-    instance_variables.inject({}) { |hash, var|
-      hash[var[1..-1].to_sym] = instance_variable_get(var);hash
-    }
-  end
-
   def valid?
     s = Storage.load
     raise self.message(:create_without_name_obj) unless self.name
@@ -73,10 +60,6 @@ class Model
     m
   end
 
-  def add_message key, *args
-    messages << message(key, args)
-  end
-
   def generate_primary_key
     if defined?(self.project) && self.project
       p = self.project.name
@@ -99,19 +82,6 @@ class Model
       end
 
       m
-    end
-
-    def find_by_name name
-      s = Storage.load
-      ret = s.data[(self.name.downcase + 's').to_sym][name]
-      ret
-    end
-
-    def find k
-      return nil unless k
-      s = Storage.load
-      k = Digest::SHA1.hexdigest(k)
-      s.data[(self.name.downcase + 's').to_sym][k]
     end
 
     def all

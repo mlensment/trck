@@ -14,16 +14,9 @@ class Task < Model
     project_was_not_found: 'Project %0 was not found',
     finished_tracking_task_in_project: 'Finished tracking task %0 in project %1',
     created_and_tracking_task_in_project: 'Created and tracking task %0 in project %1',
-
-    task_removed: 'Removed task %0',
-    task_started: 'Tracking task %0',
-    task_stopped: 'Finished tracking task %0',
-    already_tracking_task: 'Already tracking task %0',
-    no_tasks_found: 'No tasks found',
-    task_not_running: 'No tasks are being tracked',
     created_and_tracking_task: 'Created and tracking task %0',
-    task_stopped_created_and_started: 'Finished tracking task %0, created and tracking task %1',
-    task_stopped_in_project: 'Finished tracking task %0 in project %1'
+    already_tracking_task: 'Already tracking task %0',
+    no_tasks_found: 'No tasks found'
   }
 
   def initialize args = {}

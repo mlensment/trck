@@ -12,18 +12,10 @@ class Project < Model
     now_tracking_in_project: 'Now tracking in project %0',
     now_tracking_without_a_project: 'Now tracking without a project',
     already_tracking_without_a_project: 'Already tracking without a project',
-
+    no_tasks_found: 'No tasks found',
     no_projects_found: 'No projects found',
     cannot_add_task_project_not_saved: 'Cannot add task - project is not saved',
-    project_was_not_found: 'Project %0 was not found',
-    no_tasks_found: 'No tasks found',
-    task_added_to_project: 'Task %0 was added to project %1',
-    task_removed_from_project: 'Removed task %0 from project %1',
-    task_not_found_in_project: 'Task %0 was not found in project %1',
-    project_with_tasks_removed: 'Removed project %1 with all its tasks',
-    task_started: 'Created and tracking task %0 in project %1',
-    task_stopped: 'Finished tracking task %0 in project %1',
-    task_created_and_started: 'Created and tracking task %0 in project %1'
+    project_was_not_found: 'Project %0 was not found'
   }
 
   def initialize args = {}
