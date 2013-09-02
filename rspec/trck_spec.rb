@@ -25,7 +25,7 @@ it 'handles basic task commands' do
     trck('stop').should eq('Finished tracking task 100')
     trck('stop').should eq('No tasks are being tracked')
 
-    trck('status').should eq("Last tracked tasks:\n100 - 0h 0m 0s\n")
+    trck('status').should eq("Last tracked tasks:\nWithout project\n  100 - 0h 0m 0s\n")
 
     trck('tasks').should eq("100 - 0h 0m 0s")
 
@@ -45,11 +45,11 @@ it 'ends previous tracking task and starts new' do
 
     trck('start 200').should eq('Finished tracking task 100, created and tracking task 200')
 
-    trck('status').should eq("Currently tracking task 200 - 0h 0m 0s\nLast tracked tasks:\n100 - 0h 0m 0s\n")
+    trck('status').should eq("Currently tracking task 200 - 0h 0m 0s\nLast tracked tasks:\nWithout project\n  100 - 0h 0m 0s\n")
 
     trck('stop').should eq('Finished tracking task 200')
 
-    trck('status').should eq("Last tracked tasks:\n100 - 0h 0m 0s\n200 - 0h 0m 0s\n")
+    trck('status').should eq("Last tracked tasks:\nWithout project\n  100 - 0h 0m 0s\n  200 - 0h 0m 0s\n")
 end
 
 it 'handles projects' do
@@ -76,12 +76,12 @@ it 'handles tasks in projects' do
     trck('add project abahn').should eq('Added project abahn')
 
     trck('start abahn calendar').should eq('Created and tracking task calendar in project abahn')
-    trck('status abahn').should eq("Currently tracking task abahn calendar - 0h 0m 0s\n")
+    trck('status abahn').should eq("Currently tracking task abahn calendar - 0h 0m 0s\n\n")
 
     trck('stop').should eq('Finished tracking task calendar in project abahn')
     trck('stop').should eq('No tasks are being tracked')
 
-    trck('status abahn').should eq("Last tracked tasks:\nabahn calendar - 0h 0m 0s\n")
+    trck('status abahn').should eq("Last tracked tasks:\nabahn\n  calendar - 0h 0m 0s\n\n")
 
     trck('tasks abahn').should eq('calendar - 0h 0m 0s')
 
@@ -121,7 +121,7 @@ it 'shows status about multiple projects' do #no functionality
 
     trck('start second_project eatdinner').should eq('Created and tracking task eatdinner in project second_project')
 
-    trck('status').should eq("Currently tracking task second_project eatdinner - 0h 0m 0s\nLast tracked tasks:\nmyproject eatlunch - 0h 0m 0s\n")
+    trck('status').should eq("Currently tracking task second_project eatdinner - 0h 0m 0s\n\nLast tracked tasks:\nmyproject\n  eatlunch - 0h 0m 0s\n\n")
 end
 
 it 'handles selecting projects' do

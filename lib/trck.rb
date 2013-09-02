@@ -43,7 +43,7 @@ class Trck
       msg = ''
       msg += running_tasks
       msg += last_tracked_tasks
-      msg = Task.message(:you_havent_tracked_anything_yet) unless msg.length > 0
+      msg = Model.message(:you_havent_tracked_anything_yet) unless msg.length > 0
       msg
     end
 
@@ -53,7 +53,7 @@ class Trck
       msg = "Currently tracking task "
       t = running.first
       if t.project_name
-        msg += "#{t.project_name} #{t.name} - #{t.formatted_duration}\n"
+        msg += "#{t.project_name} #{t.name} - #{t.formatted_duration}\n\n"
       else
         msg += "#{t.name} - #{t.formatted_duration}\n"
       end
@@ -61,17 +61,34 @@ class Trck
     end
 
     def last_tracked_tasks
-      tracked = Task.tracked
-      return '' unless tracked.any?
+      projects = Project.all
       msg = "Last tracked tasks:\n"
-      tracked.each do |x|
-        if x.project_name
-          msg += "#{x.project_name} #{x.name} - #{x.formatted_duration}\n"
-        else
-          msg += "#{x.name} - #{x.formatted_duration}\n"
+      msg_i = ""
+
+      projects.each do |p|
+        space = false
+        p.tasks.each_with_index do |t, i|
+          next unless t.end_at
+          msg_i += p.name + "\n" if i == 0
+          msg_i += "  #{t.name} - #{t.formatted_duration}\n"
+          space = true
         end
+        msg_i += "\n" if space
       end
-      msg
+
+      tasks = Task.without_project
+
+      tasks.each_with_index do |t, i|
+        next unless t.end_at
+        msg_i += Model.message(:without_project) + "\n" if i == 0
+        msg_i += "  #{t.name} - #{t.formatted_duration}\n"
+      end
+
+      if msg_i.length > 0
+        msg + msg_i
+      else
+        ""
+      end
     end
 
     def self.sync

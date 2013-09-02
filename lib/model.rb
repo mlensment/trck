@@ -9,7 +9,8 @@ class Model
     create_same_name_obj: "Cannot create two {class_name}s with the same name",
     create_without_name_obj: "Cannot create {class_name} without name",
     not_found: "%0 %1 was not found",
-    you_havent_tracked_anything_yet: "You haven't tracked anything yet"
+    you_havent_tracked_anything_yet: "You haven't tracked anything yet",
+    without_project: "Without project"
   }
 
   def initialize args = {}
