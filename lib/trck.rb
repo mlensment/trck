@@ -1,5 +1,5 @@
 require 'storage'
-require 'organization'
+require 'task'
 
 class Trck
   class << self
@@ -20,6 +20,7 @@ class Trck
           return Task.remove_task(args) if action == 'remove' # trck remove 100
           return Project.list_tasks(args) if action == 'tasks' # trck tasks abahn
           return Project.exit if action == 'exit' # trck exit project
+          return Project.select(args) if action == 'select' #trck select myproject
         else
           return Project.start_task(args) if action == 'start' # trck start abahn 100
           return Project.remove_project(args) if action == 'remove' && get_arg(args, 'project')
@@ -42,19 +43,19 @@ class Trck
       msg = ''
       msg += running_tasks
       msg += last_tracked_tasks
+      msg = Task.message(:you_havent_tracked_anything_yet) unless msg.length > 0
       msg
     end
 
     def running_tasks
       running = Task.running
       return '' unless running.any?
-      msg = "Currently tracking tasks:\n"
-      running.each do |x|
-        if x.project_name
-          msg += "#{x.project_name} #{x.name} - #{x.formatted_duration}\n"
-        else
-          msg += "#{x.name} - #{x.formatted_duration}\n"
-        end
+      msg = "Currently tracking task "
+      t = running.first
+      if t.project_name
+        msg += "#{t.project_name} #{t.name} - #{t.formatted_duration}\n"
+      else
+        msg += "#{t.name} - #{t.formatted_duration}\n"
       end
       msg
     end

@@ -16,7 +16,8 @@ class Task < Model
     created_and_tracking_task_in_project: 'Created and tracking task %0 in project %1',
     created_and_tracking_task: 'Created and tracking task %0',
     already_tracking_task: 'Already tracking task %0',
-    no_tasks_found: 'No tasks found'
+    no_tasks_found: 'No tasks found',
+    tracking_task: 'Tracking task %0'
   }
 
   def initialize args = {}
@@ -58,6 +59,11 @@ class Task < Model
   end
 
   def formatted_duration
+    if start_at && !end_at
+      duration = (Time.now - start_at).to_i
+    else
+      duration = self.duration
+    end
     hours = duration / 3600.to_i
     minutes = (duration / 60 - hours * 60).to_i
     seconds = (duration - (minutes * 60 + hours * 3600))
@@ -93,6 +99,8 @@ class Task < Model
 
       if t
         return message(:already_tracking_task, args[0]) if t.running?
+        t.start
+        return message(:tracking_task, args[0])
       else
         return Task.stop_and_create_and_start(args[0]) if Task.running.any? && !t
         return Task.create_and_start(args[0]) unless t
